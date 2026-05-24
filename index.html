@@ -742,7 +742,7 @@
     <div class="email-section" id="email-section">
         <h2>NEW RECIPE<br>EVERY WEEK</h2>
         <p>Drop your email and we'll send it straight to you. No spam, just food.</p>
-        <form class="email-form" onsubmit="handleEmailSubmit(event)">
+        <form class="email-form" action="https://formspree.io/f/mgoqlodd" method="POST">
             <input class="email-input" type="email" name="email" placeholder="your@email.com" id="email-input" required>
             <button class="email-submit" type="submit">Sign me up</button>
         </form>
@@ -1169,5 +1169,4 @@ function saveRecipe() {
     saveData();
     renderHub();
     renderAdminList();
-    closeForm();
-    showT
+    clo
