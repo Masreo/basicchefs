@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Basic Chefs</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23FF2D1A' rx='6'/><text x='16' y='23' font-family='Arial Black,sans-serif' font-weight='900' font-style='italic' font-size='15' fill='%235CC8FF' text-anchor='middle'>BC</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,700;0,900;1,700;1,900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red: #FF2D1A;
+            --blue: #5CC8FF;
+            --white: #FFFFFF;
+            --dark: #111111;
+            --light-gray: #F5F5F5;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Barlow', sans-serif;
+            background: var(--white);
+            color: var(--dark);
+        }
+
+        /* ── HEADER ── */
+        header {
+            background: var(--red);
+            padding: 18px 48px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+        }
+        .logo {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            font-size: 2rem;
+            color: var(--blue);
+            letter-spacing: 1px;
+            cursor: pointer;
+            text-transform: uppercase;
+        }
+        nav { display: flex; align-items: center; gap: 24px; }
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+        nav a:hover { color: var(--blue); }
+
+        /* ── HERO ── */
+        .hero {
+            background: var(--red);
+            padding: 56px 48px 0;
+            display: flex;
+            align-items: flex-end;
+            gap: 48px;
+            overflow: hidden;
+            min-height: 420px;
+        }
+        .hero-text { padding-bottom: 56px; flex: 1; min-width: 0; }
+        .hero-text h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            font-size: 6rem;
+            color: var(--blue);
+            line-height: 0.9;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+        .hero-text p {
+            color: rgba(255,255,255,0.88);
+            font-size: 1.15rem;
+            font-weight: 500;
+            margin-bottom: 28px;
+        }
+        .new-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--blue);
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 0.78rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 6px 14px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+        }
+        .new-badge .dot {
+            width: 7px;
+            height: 7px;
+            background: var(--red);
+            border-radius: 50%;
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.7); }
+        }
+        .latest-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: 2.8rem;
+            color: var(--white);
+            line-height: 1;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        .latest-title:hover { color: var(--blue); }
+        .latest-desc {
+            color: rgba(255,255,255,0.75);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            max-width: 420px;
+        }
+        .btn-latest {
+            display: inline-block;
+            background: var(--white);
+            color: var(--red);
+            font-weight: 700;
+            font-size: 0.9rem;
+            padding: 12px 24px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-latest:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+        .hero-img-wrap {
+            flex: 0 0 420px;
+            height: 420px;
+            border-radius: 20px 20px 0 0;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .hero-img-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .hero-img-wrap:hover img { transform: scale(1.04); }
+
+        /* ── FILTER BAR ── */
+        .filter-bar {
+            background: var(--dark);
+            padding: 0 48px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .filter-bar::-webkit-scrollbar { display: none; }
+        .filter-btn {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.5);
+            font-family: 'Barlow', sans-serif;
+            font-weight: 600;
+            font-size: 0.88rem;
+            padding: 14px 16px;
+            cursor: pointer;
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+            border-bottom: 3px solid transparent;
+            transition: color 0.2s, border-color 0.2s;
+        }
+        .filter-btn:hover { color: rgba(255,255,255,0.85); }
+        .filter-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+        /* ── HUB ── */
+        .hub {
+            padding: 56px 48px;
+            max-width: 1240px;
+            margin: 0 auto;
+        }
+        .hub-header {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+        .hub-header h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: 2.6rem;
+            text-transform: uppercase;
+        }
+        .recipe-count { font-size: 1rem; color: #999; font-weight: 600; }
+        .recipe-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
+            gap: 28px;
+        }
+
+        /* ── RECIPE CARD ── */
+        .recipe-card {
+            border-radius: 16px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+            background: var(--white);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        }
+        .recipe-card:hover { transform: translateY(-7px); box-shadow: 0 16px 48px rgba(0,0,0,0.14); }
+        .recipe-card.hidden { display: none; }
+        .card-img-wrap { position: relative; }
+        .recipe-card img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+            background: #eee;
+        }
+        .new-flag {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: var(--blue);
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 0.72rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+        .card-body { padding: 20px 22px 22px; }
+        .card-body h3 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.7rem;
+            margin-bottom: 7px;
+            line-height: 1.1;
+        }
+        .card-body p { color: #666; font-size: 0.93rem; line-height: 1.55; margin-bottom: 14px; }
+        .recipe-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag {
+            border-radius: 20px;
+            padding: 4px 13px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+        .tag.red { background: var(--red); color: var(--white); }
+
+        /* ── ABOUT STRIP ── */
+        .about-strip {
+            background: var(--light-gray);
+            padding: 64px 48px;
+            display: flex;
+            align-items: center;
+            gap: 48px;
+            max-width: 100%;
+        }
+        .about-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            background: var(--red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .about-avatar-placeholder {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: var(--red);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            font-size: 1.4rem;
+            color: var(--blue);
+            letter-spacing: 1px;
+        }
+        .about-text { flex: 1; }
+        .about-text h3 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: 2rem;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .about-text p {
+            color: #555;
+            font-size: 1.05rem;
+            line-height: 1.75;
+            max-width: 600px;
+        }
+
+        /* ── EMAIL SIGNUP ── */
+        .email-section {
+            background: var(--red);
+            padding: 72px 48px;
+            text-align: center;
+        }
+        .email-section h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            font-size: 3.5rem;
+            color: var(--blue);
+            text-transform: uppercase;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+        .email-section p {
+            color: rgba(255,255,255,0.85);
+            font-size: 1.1rem;
+            margin-bottom: 32px;
+        }
+        .email-form {
+            display: flex;
+            gap: 12px;
+            max-width: 480px;
+            margin: 0 auto;
+        }
+        .email-input {
+            flex: 1;
+            padding: 14px 20px;
+            border-radius: 10px;
+            border: none;
+            font-family: 'Barlow', sans-serif;
+            font-size: 1rem;
+            outline: none;
+        }
+        .email-submit {
+            background: var(--dark);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            padding: 14px 24px;
+            font-family: 'Barlow', sans-serif;
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .email-submit:hover { background: #333; }
+        .email-note {
+            margin-top: 14px;
+            color: rgba(255,255,255,0.5);
+            font-size: 0.82rem;
+        }
+
+        /* ── RECIPE DETAIL ── */
+        #detail-view { display: none; }
+        .detail-inner {
+            max-width: 780px;
+            margin: 0 auto;
+            padding: 44px 48px 100px;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--red);
+            cursor: pointer;
+            border: none;
+            background: none;
+            padding: 0;
+            margin-bottom: 36px;
+            letter-spacing: 0.3px;
+            transition: gap 0.2s;
+        }
+        .back-btn:hover { gap: 12px; }
+        .detail-hero-img {
+            width: 100%;
+            height: 420px;
+            object-fit: cover;
+            border-radius: 20px;
+            margin-bottom: 36px;
+            display: block;
+            background: #eee;
+        }
+        .detail-inner h1 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: 4rem;
+            line-height: 1;
+            text-transform: uppercase;
+            margin-bottom: 14px;
+        }
+        .detail-desc { font-size: 1.1rem; color: #555; line-height: 1.75; margin-bottom: 32px; }
+        .detail-meta-bar {
+            display: flex;
+            margin-bottom: 44px;
+            background: var(--light-gray);
+            border-radius: 14px;
+            overflow: hidden;
+        }
+        .meta-cell { flex: 1; padding: 18px 20px; text-align: center; border-right: 1px solid #e0e0e0; }
+        .meta-cell:last-child { border-right: none; }
+        .meta-cell .label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            margin-bottom: 5px;
+        }
+        .meta-cell .value {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: 1.6rem;
+            color: var(--red);
+        }
+        .section-heading {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: 1.9rem;
+            text-transform: uppercase;
+            margin-bottom: 18px;
+            margin-top: 40px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .section-heading::after {
+            content: '';
+            flex: 1;
+            height: 3px;
+            background: var(--red);
+            border-radius: 2px;
+        }
+        .ingredients-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 24px; }
+        .ingredient-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 0;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 1rem;
+        }
+        .ingredient-item::before {
+            content: '';
+            width: 9px;
+            height: 9px;
+            background: var(--red);
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        .steps-list { list-style: none; }
+        .steps-list li { display: flex; gap: 22px; margin-bottom: 28px; align-items: flex-start; }
+        .step-num {
+            background: var(--red);
+            color: var(--white);
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        .step-text { font-size: 1.05rem; line-height: 1.75; padding-top: 7px; color: #333; }
+
+        /* ── FOOTER ── */
+        footer {
+            background: var(--dark);
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            padding: 28px 20px;
+            font-size: 0.88rem;
+            font-weight: 500;
+        }
+        footer span { color: var(--red); }
+        .admin-link {
+            color: rgba(255,255,255,0.2);
+            text-decoration: none;
+            font-size: 0.75rem;
+            margin-left: 16px;
+            transition: color 0.2s;
+            cursor: pointer;
+        }
+        .admin-link:hover { color: rgba(255,255,255,0.5); }
+
+        /* ══════════════════════════════════════
+           ADMIN PANEL
+        ══════════════════════════════════════ */
+        #admin-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            overflow-y: auto;
+            padding: 40px 20px;
+        }
+        .admin-panel {
+            background: var(--white);
+            max-width: 800px;
+            margin: 0 auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.3);
+        }
+        .admin-header {
+            background: var(--red);
+            padding: 24px 32px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        .admin-header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+        .admin-tabs {
+            display: flex;
+            gap: 4px;
+        }
+        .admin-tab {
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.55);
+            font-family: 'Barlow', sans-serif;
+            font-weight: 700;
+            font-size: 0.88rem;
+            padding: 10px 18px;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: background 0.2s, color 0.2s;
+            letter-spacing: 0.3px;
+        }
+        .admin-tab:hover { color: white; }
+        .admin-tab.active { background: white; color: var(--red); }
+        .admin-header h2 {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-style: italic;
+            font-size: 1.8rem;
+            color: var(--blue);
+            letter-spacing: 1px;
+        }
+        .admin-close {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        .admin-close:hover { background: rgba(255,255,255,0.35); }
+        .admin-body { padding: 32px; }
+        .admin-recipe-list { margin-bottom: 28px; }
+        .admin-recipe-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .admin-recipe-row:last-child { border-bottom: none; }
+        .admin-recipe-thumb {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            object-fit: cover;
+            background: #eee;
+            flex-shrink: 0;
+        }
+        .admin-recipe-name {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            flex: 1;
+        }
+        .admin-recipe-meta { font-size: 0.82rem; color: #999; }
+        .btn { border: none; border-radius: 8px; padding: 8px 16px; font-family: 'Barlow', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: opacity 0.2s; }
+        .btn:hover { opacity: 0.85; }
+        .btn-edit { background: var(--light-gray); color: var(--dark); }
+        .btn-delete { background: #ffe5e2; color: #c0392b; }
+        .btn-red { background: var(--red); color: white; padding: 12px 24px; font-size: 0.95rem; border-radius: 10px; width: 100%; margin-bottom: 12px; }
+        #recipe-form { display: none; }
+        .form-title {
+            font-family: 'Barlow Condensed', sans-serif;
+            font-weight: 900;
+            font-size: 1.6rem;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--red);
+        }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        .form-group { display: flex; flex-direction: column; gap: 6px; }
+        .form-group.full { grid-column: 1 / -1; }
+        label { font-size: 0.8rem; font-weight: 700; color: #777; text-transform: uppercase; letter-spacing: 0.5px; }
+        input, textarea, select { border: 2px solid #e8e8e8; border-radius: 10px; padding: 10px 14px; font-family: 'Barlow', sans-serif; font-size: 0.95rem; color: var(--dark); transition: border-color 0.2s; background: white; width: 100%; }
+        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--red); }
+        textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+        .image-preview { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; display: block; background: #f0f0f0; margin-top: 8px; }
+        .image-hint { font-size: 0.78rem; color: #999; margin-top: 6px; line-height: 1.5; }
+        .form-actions { display: flex; gap: 12px; margin-top: 24px; }
+        .btn-cancel { background: var(--light-gray); color: var(--dark); padding: 12px 24px; font-size: 0.95rem; border-radius: 10px; flex: 1; }
+        .btn-save-recipe { background: var(--red); color: white; padding: 12px 24px; font-size: 0.95rem; border-radius: 10px; flex: 2; }
+
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #111;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 40px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: transform 0.4s ease;
+            z-index: 2000;
+            white-space: nowrap;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) {
+            .hero { flex-direction: column; padding: 40px 24px 0; min-height: unset; }
+            .hero-text { padding-bottom: 32px; }
+            .hero-text h1 { font-size: 4rem; }
+            .hero-img-wrap { flex: none; width: 100%; height: 280px; border-radius: 16px 16px 0 0; }
+            .filter-bar { padding: 0 24px; }
+            .hub { padding: 40px 24px; }
+            .recipe-grid { grid-template-columns: 1fr; }
+            .about-strip { flex-direction: column; padding: 48px 24px; text-align: center; }
+            .about-text p { max-width: 100%; }
+            .email-section { padding: 56px 24px; }
+            .email-form { flex-direction: column; }
+            .detail-inner { padding: 28px 20px 60px; }
+            .detail-inner h1 { font-size: 2.8rem; }
+            .detail-hero-img { height: 260px; }
+            .ingredients-grid { grid-template-columns: 1fr; }
+            .detail-meta-bar { flex-wrap: wrap; }
+            .meta-cell { min-width: 50%; border-bottom: 1px solid #e0e0e0; }
+            .form-grid { grid-template-columns: 1fr; }
+            .admin-body { padding: 20px; }
+            header { padding: 14px 24px; }
+            .logo { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+    <div class="logo" onclick="showHub()">BASIC CHEFS</div>
+    <nav>
+        <a onclick="showHub()">Recipes</a>
+        <a onclick="scrollToAbout()">About</a>
+        <a onclick="scrollToEmail()">Newsletter</a>
+    </nav>
+</header>
+
+<!-- HUB VIEW -->
+<div id="hub-view">
+
+    <!-- HERO: Latest Recipe Spotlight -->
+    <div class="hero" id="hero-section">
+        <div class="hero-text">
+            <h1>BASIC<br>CHEFS</h1>
+            <p>Simple recipes. Serious flavour.</p>
+            <div id="latest-badge" class="new-badge"><span class="dot"></span> New this week</div>
+            <div class="latest-title" id="latest-title" onclick="openLatest()"></div>
+            <div class="latest-desc" id="latest-desc"></div>
+            <button class="btn-latest" onclick="openLatest()">Get the recipe →</button>
+        </div>
+        <div class="hero-img-wrap" onclick="openLatest()">
+            <img id="latest-img" src="" alt="Latest recipe">
+        </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar" id="filter-bar">
+        <button class="filter-btn active" onclick="filterRecipes('all', this)">All Recipes</button>
+        <button class="filter-btn" onclick="filterRecipes('Easy', this)">Easy</button>
+        <button class="filter-btn" onclick="filterRecipes('Medium', this)">Medium</button>
+        <button class="filter-btn" onclick="filterRecipes('Hard', this)">Hard</button>
+        <button class="filter-btn" onclick="filterRecipes('quick', this)">Under 30 min</button>
+    </div>
+
+    <!-- RECIPE GRID -->
+    <section class="hub">
+        <div class="hub-header">
+            <h2>All Recipes</h2>
+            <span class="recipe-count" id="recipe-count"></span>
+        </div>
+        <div class="recipe-grid" id="recipe-grid"></div>
+    </section>
+
+    <!-- ABOUT STRIP -->
+    <div class="about-strip" id="about-section">
+        <div class="about-avatar-placeholder">BC</div>
+        <div class="about-text">
+            <h3 id="about-heading">Who is Basic Chefs?</h3>
+            <p id="about-text">Just someone who loves cooking food that actually tastes good — without the faff. Every week a new recipe drops here: real food, real ingredients, no nonsense. If you can follow instructions, you can cook this stuff.</p>
+        </div>
+    </div>
+
+    <!-- EMAIL SIGNUP -->
+    <div class="email-section" id="email-section">
+        <h2>NEW RECIPE<br>EVERY WEEK</h2>
+        <p>Drop your email and we'll send it straight to you. No spam, just food.</p>
+        <form class="email-form" onsubmit="handleEmailSubmit(event)">
+            <input class="email-input" type="email" name="email" placeholder="your@email.com" id="email-input" required>
+            <button class="email-submit" type="submit">Sign me up</button>
+        </form>
+        <p class="email-note">Join the list. Unsubscribe any time.</p>
+    </div>
+
+</div>
+
+<!-- DETAIL VIEW -->
+<div id="detail-view">
+    <div class="detail-inner" id="detail-inner"></div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+    © 2025 <span>Basic Chefs</span> — Keep it simple. Make it delicious.
+    <span class="admin-link" onclick="openAdmin()">manage</span>
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<!-- ══════════════════════════════════════
+     ADMIN PANEL
+══════════════════════════════════════ -->
+<div id="admin-overlay" onclick="handleOverlayClick(event)">
+    <div class="admin-panel">
+        <div class="admin-header">
+            <div class="admin-header-top">
+                <h2>Basic Chefs Admin</h2>
+                <button class="admin-close" onclick="closeAdmin()">✕</button>
+            </div>
+            <div class="admin-tabs">
+                <button class="admin-tab active" id="tab-recipes" onclick="switchTab('recipes')">Recipes</button>
+                <button class="admin-tab" id="tab-about" onclick="switchTab('about')">About Section</button>
+            </div>
+        </div>
+        <div class="admin-body">
+
+            <!-- ABOUT EDITOR -->
+            <div id="admin-about-view" style="display:none;">
+                <div class="form-title">Edit About Section</div>
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label>Heading</label>
+                    <input type="text" id="about-heading-input" placeholder="e.g. Who is Basic Chefs?">
+                </div>
+                <div class="form-group" style="margin-bottom:24px;">
+                    <label>Your Story</label>
+                    <textarea id="about-text-input" style="min-height:140px;" placeholder="Tell people who you are and what Basic Chefs is all about..."></textarea>
+                </div>
+                <button class="btn btn-save-recipe" style="width:100%;" onclick="saveAbout()">Save Changes</button>
+            </div>
+
+            <div id="admin-list-view">
+                <div class="admin-recipe-list" id="admin-recipe-list"></div>
+                <button class="btn btn-red" onclick="openForm(null)">+ Add New Recipe</button>
+            </div>
+            <div id="recipe-form">
+                <div class="form-title" id="form-title">Add New Recipe</div>
+                <input type="hidden" id="field-id">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Recipe Title</label>
+                        <input type="text" id="field-title" placeholder="e.g. Smashed Burger">
+                    </div>
+                    <div class="form-group full">
+                        <label>Short Description</label>
+                        <input type="text" id="field-desc" placeholder="One line about the dish...">
+                    </div>
+                    <div class="form-group">
+                        <label>Cook Time</label>
+                        <input type="text" id="field-time" placeholder="e.g. 25 min">
+                    </div>
+                    <div class="form-group">
+                        <label>Serves</label>
+                        <input type="text" id="field-servings" placeholder="e.g. 4">
+                    </div>
+                    <div class="form-group">
+                        <label>Difficulty</label>
+                        <select id="field-difficulty">
+                            <option>Easy</option>
+                            <option>Medium</option>
+                            <option>Hard</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label>Image URL</label>
+                        <input type="text" id="field-image" placeholder="Paste a photo link here..." oninput="previewImage(this.value)">
+                        <img class="image-preview" id="image-preview" src="" alt="Preview" onerror="this.style.opacity=0" onload="this.style.opacity=1">
+                        <p class="image-hint">💡 Right-click any food photo online → "Copy image address" and paste it here.</p>
+                    </div>
+                    <div class="form-group full">
+                        <label>Ingredients (one per line)</label>
+                        <textarea id="field-ingredients" placeholder="200g ground beef&#10;2 brioche buns&#10;2 slices cheese"></textarea>
+                    </div>
+                    <div class="form-group full">
+                        <label>Method / Steps (one per line)</label>
+                        <textarea id="field-steps" style="min-height:140px" placeholder="Season the beef with salt and pepper.&#10;Heat a pan until smoking hot.&#10;Smash the patty flat..."></textarea>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn btn-cancel" onclick="closeForm()">Cancel</button>
+                    <button class="btn btn-save-recipe" onclick="saveRecipe()">Save Recipe</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  DEFAULT RECIPES
+// ─────────────────────────────────────────────
+const defaultRecipes = [
+    {
+        id: 1,
+        title: "Smashed Burger",
+        description: "The ultimate smash burger — crispy lacy edges, melty cheese, and a sauce you'll want on absolutely everything.",
+        image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=800&q=80",
+        time: "20 min", servings: "2", difficulty: "Easy",
+        ingredients: ["200g ground beef (80/20)","2 brioche burger buns","2 slices American cheese","1 white onion, finely sliced","Iceberg lettuce & pickles","2 tbsp butter","Salt & cracked black pepper","Smash sauce: mayo, ketchup, mustard, pickle juice"],
+        steps: ["Form the beef into two loose balls — don't overwork the meat. Season generously with salt and pepper.","Heat a cast iron skillet over high heat until smoking hot. Add a knob of butter.","Place a beef ball in the pan and immediately smash it flat with a sturdy spatula. Press hard and hold for 10 seconds.","Scatter sliced onions over the top of the patty. Cook 2–3 minutes until the edges are dark and crispy.","Flip the patty, lay a slice of cheese straight on top, and let it melt for about 1 minute.","Toast the brioche buns cut-side down in the same pan. Mix your smash sauce and spread generously.","Build the burger: sauce on both buns, lettuce, patty with melted cheese, pickles. Serve immediately."]
+    },
+    {
+        id: 2,
+        title: "Creamy Garlic Pasta",
+        description: "A weeknight hero. Rich, creamy, and on the table in 20 minutes flat. The kind of pasta you'd pay good money for.",
+        image: "https://images.unsplash.com/photo-1555949258-eb67b1ef0ceb?auto=format&fit=crop&w=800&q=80",
+        time: "20 min", servings: "4", difficulty: "Easy",
+        ingredients: ["400g rigatoni or penne","200ml double cream","150g parmesan, finely grated","4 cloves garlic, thinly sliced","100g pancetta or smoked bacon","2 tbsp olive oil","Salt, black pepper & chilli flakes","Fresh basil to finish"],
+        steps: ["Bring a large pot of heavily salted water to a boil. Cook pasta until just al dente. Reserve a full mug of pasta water before draining.","While pasta cooks, fry the pancetta in olive oil over medium-high heat until crispy and golden.","Add the sliced garlic to the pan. Cook 60 seconds, stirring constantly — don't let it burn.","Pour in the double cream. Bring to a gentle simmer and add a good splash of the pasta water.","Drain the pasta and toss directly into the sauce. Add the parmesan and stir vigorously until glossy.","Season boldly with salt, pepper, and chilli flakes. Finish with torn fresh basil and extra parmesan."]
+    },
+    {
+        id: 3,
+        title: "Chicken Katsu Curry",
+        description: "Crispy golden chicken over fluffy rice with a rich, warming Japanese curry sauce. A proper crowd-pleaser.",
+        image: "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=800&q=80",
+        time: "40 min", servings: "2", difficulty: "Medium",
+        ingredients: ["2 large chicken breasts","100g panko breadcrumbs","2 eggs, beaten","50g plain flour","1 large onion, diced","2 carrots, roughly chopped","3 tbsp medium curry powder","400ml chicken stock","2 tbsp soy sauce","Steamed white rice to serve"],
+        steps: ["Butterfly the chicken breasts open, then pound to an even 1cm thickness. Season well with salt.","Set up a breading station: flour → beaten egg → panko. Coat each piece firmly.","Heat oil to 170°C. Fry the chicken 4–5 minutes per side until deep golden. Drain on paper towel.","Sauté the onion and carrot in oil for 8–10 minutes until completely soft.","Add curry powder and cook 1 minute until fragrant. Pour in the stock and soy sauce. Simmer 15 minutes.","Blend the sauce until completely smooth. Taste and adjust seasoning.","Slice the katsu diagonally. Serve over steamed rice and pour the curry sauce over generously."]
+    }
+];
+
+// ─────────────────────────────────────────────
+//  DATA
+// ─────────────────────────────────────────────
+let recipes = JSON.parse(localStorage.getItem('basicchefs_v2_recipes') || 'null') || defaultRecipes;
+let currentFilter = 'all';
+
+function saveData() { localStorage.setItem('basicchefs_v2_recipes', JSON.stringify(recipes)); }
+function nextId() { return recipes.length > 0 ? Math.max(...recipes.map(r => r.id)) + 1 : 1; }
+
+// ─────────────────────────────────────────────
+//  HERO: LATEST RECIPE
+// ─────────────────────────────────────────────
+function renderLatest() {
+    if (recipes.length === 0) return;
+    const latest = recipes[recipes.length - 1];
+    document.getElementById('latest-title').textContent = latest.title;
+    document.getElementById('latest-desc').textContent = latest.description;
+    document.getElementById('latest-img').src = latest.image;
+    document.getElementById('latest-img').onerror = function() { this.style.opacity = 0.3; };
+}
+
+function openLatest() {
+    if (recipes.length === 0) return;
+    showRecipe(recipes[recipes.length - 1].id);
+}
+
+// ─────────────────────────────────────────────
+//  FILTER
+// ─────────────────────────────────────────────
+function filterRecipes(filter, btn) {
+    currentFilter = filter;
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const cards = document.querySelectorAll('.recipe-card');
+    let visible = 0;
+    cards.forEach(card => {
+        const difficulty = card.dataset.difficulty;
+        const time = parseInt(card.dataset.time) || 99;
+        let show = false;
+        if (filter === 'all') show = true;
+        else if (filter === 'quick') show = time < 30;
+        else show = difficulty === filter;
+        card.classList.toggle('hidden', !show);
+        if (show) visible++;
+    });
+    document.getElementById('recipe-count').textContent = `${visible} recipe${visible !== 1 ? 's' : ''}`;
+}
+
+// ─────────────────────────────────────────────
+//  HUB
+// ─────────────────────────────────────────────
+function renderHub() {
+    renderLatest();
+    const total = recipes.length;
+    document.getElementById('recipe-count').textContent = `${total} recipe${total !== 1 ? 's' : ''}`;
+    const grid = document.getElementById('recipe-grid');
+    const latestId = recipes.length > 0 ? recipes[recipes.length - 1].id : null;
+
+    grid.innerHTML = [...recipes].reverse().map(r => {
+        const timeNum = parseInt(r.time) || 99;
+        const isNew = r.id === latestId;
+        return `
+        <div class="recipe-card" data-difficulty="${r.difficulty}" data-time="${timeNum}" onclick="showRecipe(${r.id})">
+            <div class="card-img-wrap">
+                <img src="${r.image}" alt="${r.title}" onerror="this.style.opacity=0">
+                ${isNew ? '<div class="new-flag">New</div>' : ''}
+            </div>
+            <div class="card-body">
+                <h3>${r.title}</h3>
+                <p>${r.description}</p>
+                <div class="recipe-meta">
+                    <span class="tag red">${r.difficulty}</span>
+                    <span class="tag">⏱ ${r.time}</span>
+                    <span class="tag">🍽 Serves ${r.servings}</span>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+
+    currentFilter = 'all';
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.filter-btn').classList.add('active');
+}
+
+function showHub() {
+    document.getElementById('hub-view').style.display = 'block';
+    document.getElementById('detail-view').style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─────────────────────────────────────────────
+//  RECIPE DETAIL
+// ─────────────────────────────────────────────
+function showRecipe(id) {
+    const r = recipes.find(r => r.id === id);
+    if (!r) return;
+    document.getElementById('hub-view').style.display = 'none';
+    document.getElementById('detail-view').style.display = 'block';
+    document.getElementById('detail-inner').innerHTML = `
+        <button class="back-btn" onclick="showHub()">← All Recipes</button>
+        <img class="detail-hero-img" src="${r.image}" alt="${r.title}" onerror="this.style.opacity=0">
+        <h1>${r.title}</h1>
+        <p class="detail-desc">${r.description}</p>
+        <div class="detail-meta-bar">
+            <div class="meta-cell"><div class="label">Time</div><div class="value">${r.time}</div></div>
+            <div class="meta-cell"><div class="label">Serves</div><div class="value">${r.servings}</div></div>
+            <div class="meta-cell"><div class="label">Difficulty</div><div class="value">${r.difficulty}</div></div>
+        </div>
+        <h2 class="section-heading">Ingredients</h2>
+        <div class="ingredients-grid">
+            ${r.ingredients.map(i => `<div class="ingredient-item">${i}</div>`).join('')}
+        </div>
+        <h2 class="section-heading">Method</h2>
+        <ol class="steps-list">
+            ${r.steps.map((s, i) => `<li><div class="step-num">${i+1}</div><p class="step-text">${s}</p></li>`).join('')}
+        </ol>
+    `;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─────────────────────────────────────────────
+//  NAV SCROLLS
+// ─────────────────────────────────────────────
+function scrollToAbout() {
+    showHub();
+    setTimeout(() => document.getElementById('about-section').scrollIntoView({ behavior: 'smooth' }), 100);
+}
+function scrollToEmail() {
+    showHub();
+    setTimeout(() => document.getElementById('email-section').scrollIntoView({ behavior: 'smooth' }), 100);
+}
+
+// ─────────────────────────────────────────────
+//  EMAIL SIGNUP (Netlify Forms)
+// ─────────────────────────────────────────────
+function handleEmailSubmit(e) {
+    e.preventDefault();
+    const form = e.target;
+    const email = document.getElementById('email-input').value.trim();
+    if (!email || !email.includes('@')) { showToast('Please enter a valid email'); return; }
+
+    fetch('https://formspree.io/f/mgoqlodd', {
+        method: 'POST',
+        headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+    })
+    .then(res => {
+        if (res.ok) {
+            form.reset();
+            showToast('You\'re on the list! 🎉');
+        } else {
+            showToast('Something went wrong. Please try again.');
+        }
+    })
+    .catch(() => {
+        showToast('Something went wrong. Please try again.');
+    });
+}
+
+// ─────────────────────────────────────────────
+//  ADMIN PANEL
+// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────
+//  ABOUT SECTION
+// ─────────────────────────────────────────────
+const defaultAbout = {
+    heading: 'Who is Basic Chefs?',
+    text: 'Just someone who loves cooking food that actually tastes good — without the faff. Every week a new recipe drops here: real food, real ingredients, no nonsense. If you can follow instructions, you can cook this stuff.'
+};
+
+let aboutContent = JSON.parse(localStorage.getItem('basicchefs_v2_about') || 'null') || defaultAbout;
+
+function renderAbout() {
+    document.getElementById('about-heading').textContent = aboutContent.heading;
+    document.getElementById('about-text').textContent = aboutContent.text;
+}
+
+function saveAbout() {
+    aboutContent.heading = document.getElementById('about-heading-input').value.trim() || defaultAbout.heading;
+    aboutContent.text = document.getElementById('about-text-input').value.trim() || defaultAbout.text;
+    localStorage.setItem('basicchefs_v2_about', JSON.stringify(aboutContent));
+    renderAbout();
+    showToast('About section updated ✓');
+}
+
+function switchTab(tab) {
+    const isRecipes = tab === 'recipes';
+    document.getElementById('tab-recipes').classList.toggle('active', isRecipes);
+    document.getElementById('tab-about').classList.toggle('active', !isRecipes);
+    document.getElementById('admin-list-view').style.display = isRecipes ? 'block' : 'none';
+    document.getElementById('recipe-form').style.display = 'none';
+    document.getElementById('admin-about-view').style.display = isRecipes ? 'none' : 'block';
+    if (!isRecipes) {
+        document.getElementById('about-heading-input').value = aboutContent.heading;
+        document.getElementById('about-text-input').value = aboutContent.text;
+    }
+}
+
+function openAdmin() {
+    renderAdminList();
+    switchTab('recipes');
+    document.getElementById('admin-overlay').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+}
+function closeAdmin() {
+    document.getElementById('admin-overlay').style.display = 'none';
+    document.body.style.overflow = '';
+    closeForm();
+}
+function handleOverlayClick(e) {
+    if (e.target === document.getElementById('admin-overlay')) closeAdmin();
+}
+function renderAdminList() {
+    const list = document.getElementById('admin-recipe-list');
+    if (recipes.length === 0) {
+        list.innerHTML = '<p style="color:#999;padding:16px 0;">No recipes yet. Add your first one below.</p>';
+        return;
+    }
+    list.innerHTML = [...recipes].reverse().map(r => `
+        <div class="admin-recipe-row">
+            <img class="admin-recipe-thumb" src="${r.image}" alt="${r.title}" onerror="this.style.opacity=0.3">
+            <div style="flex:1">
+                <div class="admin-recipe-name">${r.title}</div>
+                <div class="admin-recipe-meta">${r.difficulty} · ${r.time} · Serves ${r.servings}</div>
+            </div>
+            <button class="btn btn-edit" onclick="openForm(${r.id})">Edit</button>
+            <button class="btn btn-delete" onclick="deleteRecipe(${r.id})">Delete</button>
+        </div>
+    `).join('');
+}
+function openForm(id) {
+    document.getElementById('admin-list-view').style.display = 'none';
+    document.getElementById('recipe-form').style.display = 'block';
+    if (id === null) {
+        document.getElementById('form-title').textContent = 'Add New Recipe';
+        ['id','title','desc','time','servings','image','ingredients','steps'].forEach(f => document.getElementById('field-'+f).value = '');
+        document.getElementById('field-difficulty').value = 'Easy';
+        document.getElementById('image-preview').src = '';
+        document.getElementById('image-preview').style.opacity = 0;
+    } else {
+        const r = recipes.find(r => r.id === id);
+        document.getElementById('form-title').textContent = 'Edit Recipe';
+        document.getElementById('field-id').value = r.id;
+        document.getElementById('field-title').value = r.title;
+        document.getElementById('field-desc').value = r.description;
+        document.getElementById('field-time').value = r.time;
+        document.getElementById('field-servings').value = r.servings;
+        document.getElementById('field-difficulty').value = r.difficulty;
+        document.getElementById('field-image').value = r.image;
+        document.getElementById('field-ingredients').value = r.ingredients.join('\n');
+        document.getElementById('field-steps').value = r.steps.join('\n');
+        document.getElementById('image-preview').src = r.image;
+        document.getElementById('image-preview').style.opacity = 1;
+    }
+}
+function closeForm() {
+    document.getElementById('recipe-form').style.display = 'none';
+    document.getElementById('admin-list-view').style.display = 'block';
+}
+function previewImage(url) { document.getElementById('image-preview').src = url; }
+function saveRecipe() {
+    const id = document.getElementById('field-id').value;
+    const title = document.getElementById('field-title').value.trim();
+    if (!title) { alert('Please enter a recipe title.'); return; }
+    const recipe = {
+        id: id ? parseInt(id) : nextId(),
+        title,
+        description: document.getElementById('field-desc').value.trim(),
+        image: document.getElementById('field-image').value.trim(),
+        time: document.getElementById('field-time').value.trim() || '—',
+        servings: document.getElementById('field-servings').value.trim() || '—',
+        difficulty: document.getElementById('field-difficulty').value,
+        ingredients: document.getElementById('field-ingredients').value.split('\n').map(s => s.trim()).filter(Boolean),
+        steps: document.getElementById('field-steps').value.split('\n').map(s => s.trim()).filter(Boolean),
+    };
+    if (id) {
+        recipes[recipes.findIndex(r => r.id === parseInt(id))] = recipe;
+    } else {
+        recipes.push(recipe);
+    }
+    saveData();
+    renderHub();
+    renderAdminList();
+    closeForm();
+    showT
