@@ -574,150 +574,6 @@
         }
         .admin-link:hover { color: rgba(255,255,255,0.5); }
 
-        /* ══════════════════════════════════════
-           ADMIN PANEL
-        ══════════════════════════════════════ */
-        #admin-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.6);
-            z-index: 1000;
-            overflow-y: auto;
-            padding: 40px 20px;
-        }
-        .admin-panel {
-            background: var(--white);
-            max-width: 800px;
-            margin: 0 auto;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 24px 80px rgba(0,0,0,0.3);
-        }
-        .admin-header {
-            background: var(--red);
-            padding: 24px 32px 0;
-            display: flex;
-            flex-direction: column;
-            gap: 0;
-        }
-        .admin-header-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 16px;
-        }
-        .admin-tabs {
-            display: flex;
-            gap: 4px;
-        }
-        .admin-tab {
-            background: none;
-            border: none;
-            color: rgba(255,255,255,0.55);
-            font-family: 'Barlow', sans-serif;
-            font-weight: 700;
-            font-size: 0.88rem;
-            padding: 10px 18px;
-            cursor: pointer;
-            border-radius: 8px 8px 0 0;
-            transition: background 0.2s, color 0.2s;
-            letter-spacing: 0.3px;
-        }
-        .admin-tab:hover { color: white; }
-        .admin-tab.active { background: white; color: var(--red); }
-        .admin-header h2 {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 900;
-            font-style: italic;
-            font-size: 1.8rem;
-            color: var(--blue);
-            letter-spacing: 1px;
-        }
-        .admin-close {
-            background: rgba(255,255,255,0.2);
-            border: none;
-            color: white;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-        .admin-close:hover { background: rgba(255,255,255,0.35); }
-        .admin-body { padding: 32px; }
-        .admin-recipe-list { margin-bottom: 28px; }
-        .admin-recipe-row {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            padding: 14px 0;
-            border-bottom: 1px solid #eee;
-        }
-        .admin-recipe-row:last-child { border-bottom: none; }
-        .admin-recipe-thumb {
-            width: 56px;
-            height: 56px;
-            border-radius: 10px;
-            object-fit: cover;
-            background: #eee;
-            flex-shrink: 0;
-        }
-        .admin-recipe-name {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            flex: 1;
-        }
-        .admin-recipe-meta { font-size: 0.82rem; color: #999; }
-        .btn { border: none; border-radius: 8px; padding: 8px 16px; font-family: 'Barlow', sans-serif; font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: opacity 0.2s; }
-        .btn:hover { opacity: 0.85; }
-        .btn-edit { background: var(--light-gray); color: var(--dark); }
-        .btn-delete { background: #ffe5e2; color: #c0392b; }
-        .btn-red { background: var(--red); color: white; padding: 12px 24px; font-size: 0.95rem; border-radius: 10px; width: 100%; margin-bottom: 12px; }
-        #recipe-form { display: none; }
-        .form-title {
-            font-family: 'Barlow Condensed', sans-serif;
-            font-weight: 900;
-            font-size: 1.6rem;
-            margin-bottom: 24px;
-            padding-bottom: 12px;
-            border-bottom: 2px solid var(--red);
-        }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group.full { grid-column: 1 / -1; }
-        label { font-size: 0.8rem; font-weight: 700; color: #777; text-transform: uppercase; letter-spacing: 0.5px; }
-        input, textarea, select { border: 2px solid #e8e8e8; border-radius: 10px; padding: 10px 14px; font-family: 'Barlow', sans-serif; font-size: 0.95rem; color: var(--dark); transition: border-color 0.2s; background: white; width: 100%; }
-        input:focus, textarea:focus, select:focus { outline: none; border-color: var(--red); }
-        textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
-        .image-preview { width: 100%; height: 180px; object-fit: cover; border-radius: 10px; display: block; background: #f0f0f0; margin-top: 8px; }
-        .image-hint { font-size: 0.78rem; color: #999; margin-top: 6px; line-height: 1.5; }
-        .form-actions { display: flex; gap: 12px; margin-top: 24px; }
-        .btn-cancel { background: var(--light-gray); color: var(--dark); padding: 12px 24px; font-size: 0.95rem; border-radius: 10px; flex: 1; }
-        .btn-save-recipe { background: var(--red); color: white; padding: 12px 24px; font-size: 0.95rem; border-radius: 10px; flex: 2; }
-
-        /* Toast */
-        .toast {
-            position: fixed;
-            bottom: 32px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #111;
-            color: white;
-            padding: 14px 28px;
-            border-radius: 40px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: transform 0.4s ease;
-            z-index: 2000;
-            white-space: nowrap;
-        }
-        .toast.show { transform: translateX(-50%) translateY(0); }
 
         /* ── SHARE ── */
         .share-btn {
@@ -1267,109 +1123,6 @@
 
 <div class="toast" id="toast"></div>
 
-<!-- ══════════════════════════════════════
-     ADMIN PANEL
-══════════════════════════════════════ -->
-<div id="admin-overlay" onclick="handleOverlayClick(event)">
-    <div class="admin-panel">
-        <div class="admin-header">
-            <div class="admin-header-top">
-                <h2>Basic Chefs Admin</h2>
-                <button class="admin-close" onclick="closeAdmin()">✕</button>
-            </div>
-            <div class="admin-tabs">
-                <button class="admin-tab active" id="tab-recipes" onclick="switchTab('recipes')">Recipes</button>
-                <button class="admin-tab" id="tab-about" onclick="switchTab('about')">About Section</button>
-            </div>
-        </div>
-        <div class="admin-body">
-
-            <!-- ABOUT EDITOR -->
-            <div id="admin-about-view" style="display:none;">
-                <div class="form-title">Edit About Section</div>
-                <div class="form-group" style="margin-bottom:16px;">
-                    <label>Heading</label>
-                    <input type="text" id="about-heading-input" placeholder="e.g. Who is Basic Chefs?">
-                </div>
-                <div class="form-group" style="margin-bottom:24px;">
-                    <label>Your Story</label>
-                    <textarea id="about-text-input" style="min-height:140px;" placeholder="Tell people who you are and what Basic Chefs is all about..."></textarea>
-                </div>
-                <button class="btn btn-save-recipe" style="width:100%;" onclick="saveAbout()">Save Changes</button>
-            </div>
-
-            <div id="admin-list-view">
-                <div class="admin-recipe-list" id="admin-recipe-list"></div>
-                <button class="btn btn-red" onclick="openForm(null)">+ Add New Recipe</button>
-                <div style="display:flex;gap:10px;margin-top:12px;">
-                    <button class="btn btn-edit" style="flex:1;" onclick="exportRecipes()">⬇ Export Backup</button>
-                    <button class="btn btn-edit" style="flex:1;" onclick="document.getElementById('import-input').click()">⬆ Import Backup</button>
-                    <input type="file" id="import-input" accept=".json" style="display:none;" onchange="importRecipes(this)">
-                </div>
-            </div>
-            <div id="recipe-form">
-                <div class="form-title" id="form-title">Add New Recipe</div>
-                <input type="hidden" id="field-id">
-                <div class="form-grid">
-                    <div class="form-group full">
-                        <label>Recipe Title</label>
-                        <input type="text" id="field-title" placeholder="e.g. Smashed Burger">
-                    </div>
-                    <div class="form-group full">
-                        <label>Short Description</label>
-                        <input type="text" id="field-desc" placeholder="One line about the dish...">
-                    </div>
-                    <div class="form-group">
-                        <label>Cook Time</label>
-                        <input type="text" id="field-time" placeholder="e.g. 25 min">
-                    </div>
-                    <div class="form-group">
-                        <label>Serves</label>
-                        <input type="text" id="field-servings" placeholder="e.g. 4">
-                    </div>
-                    <div class="form-group">
-                        <label>Difficulty</label>
-                        <select id="field-difficulty">
-                            <option>Easy</option>
-                            <option>Medium</option>
-                            <option>Hard</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Batch Cost (£) — e.g. 4.50</label>
-                        <input type="number" id="field-cost" placeholder="e.g. 4.50" step="0.01" min="0">
-                    </div>
-                    <div class="form-group full">
-                        <label>Photo</label>
-                        <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;">
-                            <button type="button" class="btn btn-edit" style="padding:10px 18px;font-size:0.9rem;" onclick="document.getElementById('photo-upload').click()">📷 Upload from camera / files</button>
-                            <span style="color:#bbb;font-size:0.85rem;">or</span>
-                            <input type="text" id="field-image" placeholder="Paste a photo link here..." oninput="previewImage(this.value)" style="flex:1;margin:0;">
-                        </div>
-                        <input type="file" id="photo-upload" accept="image/*" style="display:none;" onchange="handlePhotoUpload(this)">
-                        <img class="image-preview" id="image-preview" src="" alt="Preview" onerror="this.style.opacity=0" onload="this.style.opacity=1">
-                        <p class="image-hint">💡 Upload straight from your camera roll, or paste an image link from the web.</p>
-                    </div>
-                    <div class="form-group full">
-                        <label>Ingredients (one per line)</label>
-                        <textarea id="field-ingredients" placeholder="200g ground beef&#10;2 brioche buns&#10;2 slices cheese"></textarea>
-                    </div>
-                    <div class="form-group full">
-                        <label>Method / Steps (one per line)</label>
-                        <textarea id="field-steps" style="min-height:140px" placeholder="Season the beef with salt and pepper.&#10;Heat a pan until smoking hot.&#10;Smash the patty flat..."></textarea>
-                    </div>
-                    <div class="form-group full">
-                        <label>Top Tips (one per line — optional)</label>
-                        <textarea id="field-tips" style="min-height:100px" placeholder="Use a cast iron pan for best results.&#10;Make ahead and store in the fridge for up to 3 days."></textarea>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button class="btn btn-cancel" onclick="closeForm()">Cancel</button>
-                    <button class="btn btn-save-recipe" onclick="saveRecipe()">Save Recipe</button>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
 
 <script>
@@ -1382,6 +1135,10 @@ const defaultRecipes = [];
 //  DATA
 // ─────────────────────────────────────────────
 let recipes = JSON.parse(localStorage.getItem('basicchefs_v2_recipes') || 'null') || defaultRecipes;
+// Safety net: if localStorage was empty but defaultRecipes has content, sync it back
+if (!localStorage.getItem('basicchefs_v2_recipes') && defaultRecipes.length > 0) {
+    localStorage.setItem('basicchefs_v2_recipes', JSON.stringify(recipes));
+}
 let currentFilter = 'all';
 
 function saveData() { localStorage.setItem('basicchefs_v2_recipes', JSON.stringify(recipes)); }
@@ -1733,211 +1490,6 @@ function handleEmailSubmit(e) {
 }
 
 // ─────────────────────────────────────────────
-//  ADMIN PANEL
-// ─────────────────────────────────────────────
-// ─────────────────────────────────────────────
-//  ABOUT SECTION
-// ─────────────────────────────────────────────
-const defaultAbout = {
-    heading: 'Who is Basic Chefs?',
-    text: 'Just someone who loves cooking food that actually tastes good — without the faff. Every week a new recipe drops here: real food, real ingredients, no nonsense. If you can follow instructions, you can cook this stuff.'
-};
-
-let aboutContent = JSON.parse(localStorage.getItem('basicchefs_v2_about') || 'null') || defaultAbout;
-
-function renderAbout() {
-    document.getElementById('about-heading').textContent = aboutContent.heading;
-    document.getElementById('about-text').textContent = aboutContent.text;
-}
-
-function saveAbout() {
-    aboutContent.heading = document.getElementById('about-heading-input').value.trim() || defaultAbout.heading;
-    aboutContent.text = document.getElementById('about-text-input').value.trim() || defaultAbout.text;
-    localStorage.setItem('basicchefs_v2_about', JSON.stringify(aboutContent));
-    renderAbout();
-    showToast('About section updated ✓');
-}
-
-function switchTab(tab) {
-    const isRecipes = tab === 'recipes';
-    document.getElementById('tab-recipes').classList.toggle('active', isRecipes);
-    document.getElementById('tab-about').classList.toggle('active', !isRecipes);
-    document.getElementById('admin-list-view').style.display = isRecipes ? 'block' : 'none';
-    document.getElementById('recipe-form').style.display = 'none';
-    document.getElementById('admin-about-view').style.display = isRecipes ? 'none' : 'block';
-    if (!isRecipes) {
-        document.getElementById('about-heading-input').value = aboutContent.heading;
-        document.getElementById('about-text-input').value = aboutContent.text;
-    }
-}
-
-function openAdmin() {
-    renderAdminList();
-    switchTab('recipes');
-    document.getElementById('admin-overlay').style.display = 'block';
-    document.body.style.overflow = 'hidden';
-}
-function closeAdmin() {
-    document.getElementById('admin-overlay').style.display = 'none';
-    document.body.style.overflow = '';
-    closeForm();
-}
-function handleOverlayClick(e) {
-    if (e.target === document.getElementById('admin-overlay')) closeAdmin();
-}
-function renderAdminList() {
-    const list = document.getElementById('admin-recipe-list');
-    if (recipes.length === 0) {
-        list.innerHTML = '<p style="color:#999;padding:16px 0;">No recipes yet. Add your first one below.</p>';
-        return;
-    }
-    list.innerHTML = [...recipes].reverse().map(r => `
-        <div class="admin-recipe-row">
-            <img class="admin-recipe-thumb" src="${r.image}" alt="${r.title}" onerror="this.style.opacity=0.3">
-            <div style="flex:1">
-                <div class="admin-recipe-name">${r.title}</div>
-                <div class="admin-recipe-meta">${r.difficulty} · ${r.time} · Serves ${r.servings}</div>
-            </div>
-            <button class="btn btn-edit" onclick="openForm(${r.id})">Edit</button>
-            <button class="btn btn-delete" onclick="deleteRecipe(${r.id})">Delete</button>
-        </div>
-    `).join('');
-}
-function openForm(id) {
-    document.getElementById('admin-list-view').style.display = 'none';
-    document.getElementById('recipe-form').style.display = 'block';
-    if (id === null) {
-        document.getElementById('form-title').textContent = 'Add New Recipe';
-        ['id','title','desc','time','servings','image','ingredients','steps','tips','cost'].forEach(f => document.getElementById('field-'+f).value = '');
-        document.getElementById('field-difficulty').value = 'Easy';
-        document.getElementById('image-preview').src = '';
-        document.getElementById('image-preview').style.opacity = 0;
-    } else {
-        const r = recipes.find(r => r.id === id);
-        document.getElementById('form-title').textContent = 'Edit Recipe';
-        document.getElementById('field-id').value = r.id;
-        document.getElementById('field-title').value = r.title;
-        document.getElementById('field-desc').value = r.description;
-        document.getElementById('field-time').value = r.time;
-        document.getElementById('field-servings').value = r.servings;
-        document.getElementById('field-difficulty').value = r.difficulty;
-        document.getElementById('field-image').value = r.image;
-        document.getElementById('field-ingredients').value = r.ingredients.join('\n');
-        document.getElementById('field-steps').value = r.steps.join('\n');
-        document.getElementById('field-tips').value = (r.tips || []).join('\n');
-        document.getElementById('field-cost').value = r.cost || '';
-        document.getElementById('image-preview').src = r.image;
-        document.getElementById('image-preview').style.opacity = 1;
-    }
-}
-function closeForm() {
-    document.getElementById('recipe-form').style.display = 'none';
-    document.getElementById('admin-list-view').style.display = 'block';
-}
-function previewImage(url) { document.getElementById('image-preview').src = url; }
-
-function handlePhotoUpload(input) {
-    const file = input.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const img = new Image();
-        img.onload = function() {
-            // Compress: resize to max 900px wide, 80% JPEG quality
-            const maxW = 900;
-            const scale = img.width > maxW ? maxW / img.width : 1;
-            const canvas = document.createElement('canvas');
-            canvas.width = img.width * scale;
-            canvas.height = img.height * scale;
-            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
-            document.getElementById('field-image').value = dataUrl;
-            document.getElementById('image-preview').src = dataUrl;
-            document.getElementById('image-preview').style.opacity = 1;
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-}
-function saveRecipe() {
-    const id = document.getElementById('field-id').value;
-    const title = document.getElementById('field-title').value.trim();
-    if (!title) { alert('Please enter a recipe title.'); return; }
-    const recipe = {
-        id: id ? parseInt(id) : nextId(),
-        title,
-        description: document.getElementById('field-desc').value.trim(),
-        image: document.getElementById('field-image').value.trim(),
-        time: document.getElementById('field-time').value.trim() || '—',
-        servings: document.getElementById('field-servings').value.trim() || '—',
-        difficulty: document.getElementById('field-difficulty').value,
-        ingredients: document.getElementById('field-ingredients').value.split('\n').map(s => s.trim()).filter(Boolean),
-        steps: document.getElementById('field-steps').value.split('\n').map(s => s.trim()).filter(Boolean),
-        tips: document.getElementById('field-tips').value.split('\n').map(s => s.trim()).filter(Boolean),
-        cost: parseFloat(document.getElementById('field-cost').value) || null,
-    };
-    if (id) {
-        recipes[recipes.findIndex(r => r.id === parseInt(id))] = recipe;
-    } else {
-        recipes.push(recipe);
-    }
-    saveData();
-    renderHub();
-    renderAdminList();
-    closeForm();
-    showToast(id ? 'Recipe updated ✓' : 'Recipe added ✓');
-}
-function exportRecipes() {
-    const data = JSON.stringify(recipes, null, 2);
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `basicchefs-backup-${new Date().toISOString().slice(0,10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    showToast('Backup downloaded ✓');
-}
-
-function importRecipes(input) {
-    const file = input.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        try {
-            const imported = JSON.parse(e.target.result);
-            if (!Array.isArray(imported)) throw new Error();
-            if (!confirm(`This will replace your current ${recipes.length} recipe(s) with ${imported.length} from the backup. Continue?`)) return;
-            recipes = imported;
-            saveData();
-            renderHub();
-            renderAdminList();
-            showToast(`${imported.length} recipes restored ✓`);
-        } catch {
-            showToast('Invalid backup file. Please try again.');
-        }
-    };
-    reader.readAsText(file);
-    input.value = '';
-}
-
-function deleteRecipe(id) {
-    if (!confirm('Delete this recipe? This cannot be undone.')) return;
-    recipes = recipes.filter(r => r.id !== id);
-    saveData();
-    renderHub();
-    renderAdminList();
-    showToast('Recipe deleted');
-}
-function showToast(msg) {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 2800);
-}
-
-
-// ─────────────────────────────────────────────
 //  COOK MODE
 // ─────────────────────────────────────────────
 let cookSteps = [];
@@ -2107,6 +1659,26 @@ function printShoppingList() {
     </body></html>`);
     win.document.close();
     win.print();
+}
+
+
+function exportRecipes() {
+    const data = localStorage.getItem('basicchefs_v2_recipes') || '[]';
+    const ta = document.createElement('textarea');
+    ta.value = data;
+    ta.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:80vw;height:60vh;z-index:99999;font-size:0.85rem;padding:16px;border-radius:8px;border:2px solid #FF2D1A;';
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99998;';
+    const closeBtn = document.createElement('button');
+    closeBtn.textContent = '✕ Close';
+    closeBtn.style.cssText = 'position:fixed;top:calc(50% - 30vh - 40px);left:50%;transform:translateX(-50%);z-index:99999;background:#FF2D1A;color:#fff;border:none;border-radius:8px;padding:8px 20px;font-weight:700;cursor:pointer;';
+    closeBtn.onclick = () => { ta.remove(); overlay.remove(); closeBtn.remove(); copyBtn.remove(); };
+    const copyBtn = document.createElement('button');
+    copyBtn.textContent = '📋 Copy all';
+    copyBtn.style.cssText = 'position:fixed;top:calc(50% + 30vh + 10px);left:50%;transform:translateX(-50%);z-index:99999;background:#5CC8FF;color:#111;border:none;border-radius:8px;padding:10px 24px;font-weight:700;cursor:pointer;font-size:1rem;';
+    copyBtn.onclick = () => { navigator.clipboard.writeText(data).then(() => { copyBtn.textContent = '✓ Copied!'; }); };
+    document.body.append(overlay, ta, closeBtn, copyBtn);
+    ta.select();
 }
 
 // Init
