@@ -441,6 +441,48 @@
             margin-bottom: 14px;
         }
         .detail-desc { font-size: 1.1rem; color: #555; line-height: 1.75; margin-bottom: 32px; }
+        .video-embed {
+            position: relative;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
+            overflow: hidden;
+            background: #000;
+            margin-bottom: 32px;
+        }
+        .video-embed.portrait {
+            aspect-ratio: 9 / 16;
+            max-width: 380px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .video-embed iframe {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: none;
+        }
+        .video-embed-native {
+            display: block;
+            width: 100%;
+            max-width: 380px;
+            margin: 0 auto 32px;
+            border-radius: 16px;
+            background: #000;
+        }
+        .watch-video-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--dark);
+            color: var(--white);
+            font-weight: 700;
+            text-decoration: none;
+            padding: 14px 24px;
+            border-radius: 10px;
+            margin-bottom: 32px;
+        }
+        .watch-video-link:hover { opacity: 0.85; }
         .detail-meta-bar {
             display: flex;
             margin-bottom: 44px;
@@ -1421,6 +1463,30 @@ function showHub() {
 // ─────────────────────────────────────────────
 //  RECIPE DETAIL
 // ─────────────────────────────────────────────
+function getVideoEmbed(url) {
+    if (!url) return '';
+    const ytShort = url.match(/youtube\.com\/shorts\/([\w-]{6,})/);
+    if (ytShort) {
+        return `<div class="video-embed portrait"><iframe src="https://www.youtube.com/embed/${ytShort[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+    }
+    const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{6,})/);
+    if (yt) {
+        return `<div class="video-embed"><iframe src="https://www.youtube.com/embed/${yt[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+    }
+    const vimeo = url.match(/vimeo\.com\/(\d+)/);
+    if (vimeo) {
+        return `<div class="video-embed"><iframe src="https://player.vimeo.com/video/${vimeo[1]}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen></iframe></div>`;
+    }
+    const tiktok = url.match(/tiktok\.com\/@[\w.-]+\/video\/(\d+)/);
+    if (tiktok) {
+        return `<blockquote class="tiktok-embed" cite="${url}" data-video-id="${tiktok[1]}" style="max-width:605px;min-width:325px;margin:0 auto 32px;"><section></section></blockquote>`;
+    }
+    if (/\.(mp4|webm|mov)(\?.*)?$/i.test(url)) {
+        return `<video class="video-embed-native" controls src="${url}"></video>`;
+    }
+    return `<a class="watch-video-link" href="${url}" target="_blank" rel="noopener">▶ Watch the video</a>`;
+}
+
 function showRecipe(id) {
     const r = recipes.find(r => r.id === id);
     if (!r) return;
@@ -1460,6 +1526,7 @@ function showRecipe(id) {
             <div class="meta-cell"><div class="label">Difficulty</div><div class="value">${r.difficulty}</div></div>
             ${r.cost ? `<div class="meta-cell"><div class="label">Batch Cost</div><div class="value">£${r.cost.toFixed(2)}</div></div>` : ''}
         </div>
+        ${r.video ? getVideoEmbed(r.video) : ''}
         <h2 class="section-heading">Ingredients</h2>
         <p class="scale-note" id="scale-note" style="display:none">Scaled ×<span id="scale-factor">1</span> — tap − / + above to adjust</p>
         <div class="ingredients-grid" id="ingredients-grid">
@@ -1478,6 +1545,15 @@ function showRecipe(id) {
             ${r.tips.map((t, i) => `<div class="tip-item"><div class="tip-bullet">${i+1}</div><span>${t}</span></div>`).join('')}
         </div>` : ''}
     `;
+    if (r.video && /tiktok\.com/.test(r.video)) {
+        const oldScript = document.getElementById('tiktok-embed-script');
+        if (oldScript) oldScript.remove();
+        const s = document.createElement('script');
+        s.id = 'tiktok-embed-script';
+        s.async = true;
+        s.src = 'https://www.tiktok.com/embed.js';
+        document.body.appendChild(s);
+    }
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
