@@ -1303,6 +1303,11 @@
                         <p class="image-hint">💡 Upload straight from your camera roll, or paste an image link from the web.</p>
                     </div>
                     <div class="form-group full">
+                        <label>Video (optional)</label>
+                        <input type="text" id="field-video" placeholder="Paste a YouTube, Vimeo or direct video link...">
+                        <p class="image-hint">💡 YouTube and TikTok links embed a real player right on the recipe page. For TikTok, use the full link from the address bar (tiktok.com/@username/video/123...) - not the short "vm.tiktok.com" share link, that'll just show a "Watch" button instead. Instagram links also show as a "Watch" button.</p>
+                    </div>
+                    <div class="form-group full">
                         <label>Ingredients (one per line)</label>
                         <textarea id="field-ingredients" placeholder="200g ground beef
 2 brioche buns
@@ -1418,7 +1423,7 @@ function openForm(id) {
     document.getElementById('recipe-form').style.display = 'block';
     if (id === null) {
         document.getElementById('form-title').textContent = 'Add New Recipe';
-        ['id','title','desc','time','servings','image','ingredients','steps','tips','cost'].forEach(f => document.getElementById('field-'+f).value = '');
+        ['id','title','desc','time','servings','image','video','ingredients','steps','tips','cost'].forEach(f => document.getElementById('field-'+f).value = '');
         document.getElementById('field-difficulty').value = 'Easy';
         document.getElementById('image-preview').src = '';
         document.getElementById('image-preview').style.opacity = 0;
@@ -1432,6 +1437,7 @@ function openForm(id) {
         document.getElementById('field-servings').value = r.servings;
         document.getElementById('field-difficulty').value = r.difficulty;
         document.getElementById('field-image').value = r.image;
+        document.getElementById('field-video').value = r.video || '';
         document.getElementById('field-ingredients').value = r.ingredients.join('\n');
         document.getElementById('field-steps').value = r.steps.join('\n');
         document.getElementById('field-tips').value = (r.tips || []).join('\n');
@@ -1477,6 +1483,7 @@ function saveRecipe() {
         title,
         description: document.getElementById('field-desc').value.trim(),
         image: document.getElementById('field-image').value.trim(),
+        video: document.getElementById('field-video').value.trim(),
         time: document.getElementById('field-time').value.trim() || '—',
         servings: document.getElementById('field-servings').value.trim() || '—',
         difficulty: document.getElementById('field-difficulty').value,
