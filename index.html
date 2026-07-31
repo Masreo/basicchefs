@@ -706,12 +706,16 @@
             .detail-inner h1 { font-size: 2.8rem; }
             .detail-hero-img { height: 260px; }
             .ingredients-grid { grid-template-columns: 1fr; }
-            .detail-meta-bar { flex-wrap: wrap; }
-            .meta-cell { min-width: 50%; border-bottom: 1px solid #e0e0e0; }
+            .meta-cell { padding: 14px 10px; }
+            .meta-cell .value { font-size: 1.25rem; }
             .form-grid { grid-template-columns: 1fr; }
             .admin-body { padding: 20px; }
             header { padding: 14px 24px; }
             .logo { font-size: 1.5rem; }
+        }
+        @media (max-width: 620px) {
+            .detail-meta-bar { flex-wrap: wrap; }
+            .meta-cell { min-width: 50%; border-bottom: 1px solid #e0e0e0; }
         }
 
         /* ── FAVOURITES ── */
