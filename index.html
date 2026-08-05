@@ -878,6 +878,66 @@
             pointer-events: none;
         }
 
+        /* ── RATING PANEL ── */
+        .rating-panel {
+            width: 100%;
+            margin-top: 18px;
+            padding-top: 18px;
+            border-top: 1px solid #e2e2e2;
+        }
+        .rating-panel.hidden { display: none; }
+        .rating-prompt { font-weight: 700; font-size: 0.9rem; margin-bottom: 10px; }
+        .star-row { display: flex; gap: 6px; margin-bottom: 14px; }
+        .star-btn {
+            background: none;
+            border: none;
+            font-size: 1.7rem;
+            line-height: 1;
+            padding: 0;
+            cursor: pointer;
+            color: #ccc;
+            transition: color 0.15s, transform 0.1s;
+        }
+        .star-btn:hover, .star-btn:focus-visible { transform: scale(1.12); }
+        .star-btn.filled { color: var(--red); }
+        .reaction-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+        .reaction-chip {
+            background: var(--white);
+            border: 1.5px solid #ddd;
+            color: var(--dark);
+            border-radius: 20px;
+            padding: 6px 14px;
+            font-family: 'Barlow', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.15s, border-color 0.15s, color 0.15s;
+        }
+        .reaction-chip.active { background: var(--dark); border-color: var(--dark); color: var(--white); }
+        .submit-rating-btn {
+            background: var(--red);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 20px;
+            font-family: 'Barlow', sans-serif;
+            font-weight: 700;
+            font-size: 0.88rem;
+            cursor: pointer;
+        }
+        .submit-rating-btn:disabled { background: #ccc; cursor: not-allowed; }
+        .recipe-rating-display {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin: -6px 0 20px;
+        }
+        .recipe-rating-display .stars { color: var(--red); }
+        .recipe-rating-display .count { color: #888; font-weight: 500; }
+
         /* ── RESPONSIVE ── */
         @media (max-width: 900px) {
             .hero { flex-direction: column; padding: 40px 24px 0; min-height: unset; }
@@ -1501,6 +1561,99 @@ function openLatest() {
 let currentSearch = '';
 let favourites = JSON.parse(localStorage.getItem('basicchefs_favs') || '[]');
 let madeRecipes = JSON.parse(localStorage.getItem('basicchefs_made') || '[]');
+
+// ─────────────────────────────────────────────
+//  RATINGS (Google Sheet backend)
+// ─────────────────────────────────────────────
+// TODO: paste your deployed Apps Script Web App URL here once it's set up.
+// Ratings/reactions are silently skipped while this is empty - everything
+// else (badges, mark as made) keeps working with no errors.
+const RATINGS_ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbwDx7iLdc59ddmna2M8PZJw7YrH68XEbXJBnzVdjzkhBr7niJdAuENWORO3VzJE7iZ-rw/exec';
+let ratingsData = {};
+let currentStarRating = 0;
+let currentReactionTags = [];
+
+function loadRatings() {
+    if (!RATINGS_ENDPOINT_URL) return;
+    const cbName = 'ratingsCallback_' + Date.now();
+    window[cbName] = function(data) {
+        ratingsData = data || {};
+        delete window[cbName];
+        script.remove();
+        if (currentRecipe) renderRatingDisplay(currentRecipe);
+    };
+    const script = document.createElement('script');
+    script.src = RATINGS_ENDPOINT_URL + '?callback=' + cbName;
+    document.body.appendChild(script);
+}
+
+function renderRatingDisplay(r) {
+    const el = document.getElementById('recipe-rating-display');
+    if (!el) return;
+    const stats = ratingsData[r.id];
+    if (!stats || !stats.count) { el.innerHTML = ''; return; }
+    const wholeStars = Math.round(stats.average);
+    el.innerHTML = `<span class="stars">\u2605 ${wholeStars}</span><span class="count">\u00b7 ${stats.count} rating${stats.count !== 1 ? 's' : ''}</span>`;
+}
+
+function submitRatingToSheet(id, title, rating, reactions) {
+    if (!RATINGS_ENDPOINT_URL) return;
+    fetch(RATINGS_ENDPOINT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify({ recipeId: id, recipeTitle: title, rating: rating, reactions: reactions })
+    }).catch(() => {});
+}
+
+function openRatingPanel(id) {
+    currentStarRating = 0;
+    currentReactionTags = [];
+    const panel = document.getElementById(`rating-panel-${id}`);
+    if (!panel) return;
+    panel.classList.remove('hidden');
+    panel.querySelectorAll('.star-btn').forEach(b => b.classList.remove('filled'));
+    panel.querySelectorAll('.reaction-chip').forEach(b => b.classList.remove('active'));
+    const submitBtn = document.getElementById(`submit-rating-${id}`);
+    if (submitBtn) submitBtn.disabled = true;
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function selectStar(id, n) {
+    currentStarRating = n;
+    document.querySelectorAll(`#star-row-${id} .star-btn`).forEach((b, i) => {
+        b.classList.toggle('filled', i < n);
+    });
+    const submitBtn = document.getElementById(`submit-rating-${id}`);
+    if (submitBtn) submitBtn.disabled = false;
+}
+
+function toggleReaction(tag, btn) {
+    const idx = currentReactionTags.indexOf(tag);
+    if (idx === -1) {
+        currentReactionTags.push(tag);
+        btn.classList.add('active');
+    } else {
+        currentReactionTags.splice(idx, 1);
+        btn.classList.remove('active');
+    }
+}
+
+function submitRating(id, title) {
+    if (currentStarRating === 0) return;
+    submitRatingToSheet(id, title, currentStarRating, currentReactionTags);
+
+    if (!madeRecipes.includes(id)) madeRecipes.push(id);
+    localStorage.setItem('basicchefs_made', JSON.stringify(madeRecipes));
+    showToast('Badge earned \u2014 check My Cookbook \u2192');
+
+    const submitBtn = document.getElementById(`submit-rating-${id}`);
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (window.gsap && submitBtn && !prefersReduced) {
+        gsap.fromTo(submitBtn, { scale: 1.15 }, { scale: 1, duration: 0.4, ease: 'back.out(2)' });
+    }
+    setTimeout(() => showRecipe(id), prefersReduced ? 0 : 450);
+}
 let currentRecipe = null;
 let currentServingsBase = 1;
 let currentServings = 1;
@@ -1803,6 +1956,7 @@ function showRecipe(id) {
         <img class="detail-hero-img" src="${r.image}" alt="${r.title}" onerror="this.style.opacity=0">
         <h1>${r.title}</h1>
         <p class="detail-desc">${r.description}</p>
+        <div class="recipe-rating-display" id="recipe-rating-display"></div>
         <div class="detail-meta-bar">
             <div class="meta-cell"><div class="label">Time</div><div class="value">${r.time}</div></div>
             <div class="meta-cell">
@@ -1844,12 +1998,24 @@ function showRecipe(id) {
             ` : `
             <div>
                 <div class="made-label">Made this recipe?</div>
-                <div class="made-sub">Mark it to unlock the badge in My Cookbook.</div>
+                <div class="made-sub">Rate it to unlock the badge in My Cookbook.</div>
             </div>
-            <button class="made-btn" onclick="toggleMade(${r.id}, this)">Mark as made</button>
+            <button class="made-btn" onclick="openRatingPanel(${r.id})">Mark as made</button>
             `}
         </div>
+        ${madeRecipes.includes(r.id) ? '' : `
+        <div class="rating-panel hidden" id="rating-panel-${r.id}">
+            <div class="rating-prompt">How did it turn out?</div>
+            <div class="star-row" id="star-row-${r.id}">
+                ${[1,2,3,4,5].map(n => `<button type="button" class="star-btn" onclick="selectStar(${r.id}, ${n})" aria-label="${n} star${n > 1 ? 's' : ''}">\u2605</button>`).join('')}
+            </div>
+            <div class="reaction-chips">
+                ${['Loved it', 'Would make again', 'Too sweet', 'Needs more spice', 'Tricky'].map(tag => `<button type="button" class="reaction-chip" onclick="toggleReaction('${tag}', this)">${tag}</button>`).join('')}
+            </div>
+            <button type="button" class="submit-rating-btn" id="submit-rating-${r.id}" disabled onclick="submitRating(${r.id}, '${r.title.replace(/'/g, "\\'")}')">Submit &amp; unlock badge</button>
+        </div>`}
     `;
+    renderRatingDisplay(r);
     if (r.video && /tiktok\.com/.test(r.video)) {
         const oldScript = document.getElementById('tiktok-embed-script');
         if (oldScript) oldScript.remove();
@@ -2130,6 +2296,7 @@ function printShoppingList() {
 renderHub();
 updateShopBadge();
 renderAbout();
+loadRatings();
 </script>
 
 
