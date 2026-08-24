@@ -45,6 +45,7 @@
         }
         nav { display: flex; align-items: center; gap: 24px; }
         nav a {
+            position: relative;
             color: var(--white);
             text-decoration: none;
             font-weight: 600;
@@ -54,6 +55,18 @@
             cursor: pointer;
         }
         nav a:hover { color: var(--blue); }
+        .nav-dot {
+            display: none;
+            position: absolute;
+            top: -3px;
+            right: -11px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--blue);
+            border: 1.5px solid var(--red);
+        }
+        .nav-dot.show { display: block; }
 
         /* ── HERO ── */
         .hero {
@@ -878,52 +891,66 @@
             pointer-events: none;
         }
 
-        /* ── RATING PANEL ── */
-        .rating-panel {
-            width: 100%;
-            margin-top: 18px;
-            padding-top: 18px;
-            border-top: 1px solid #e2e2e2;
+        /* ── RATING POPUP ── */
+        .rating-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 5000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
-        .rating-panel.hidden { display: none; }
-        .rating-prompt { font-weight: 700; font-size: 0.9rem; margin-bottom: 10px; }
-        .star-row { display: flex; gap: 6px; margin-bottom: 14px; }
+        .rating-overlay.open { display: flex; }
+        .rating-modal {
+            position: relative;
+            background: var(--white);
+            border-radius: 16px;
+            padding: 36px 28px 28px;
+            max-width: 340px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .rating-modal-close {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            line-height: 1;
+            color: #aaa;
+            cursor: pointer;
+            padding: 6px;
+        }
+        .rating-modal-close:hover { color: var(--dark); }
+        .rating-prompt { font-weight: 700; font-size: 1.1rem; margin-bottom: 18px; }
+        .star-row { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; }
         .star-btn {
             background: none;
             border: none;
-            font-size: 1.7rem;
+            font-size: 2.2rem;
             line-height: 1;
             padding: 0;
             cursor: pointer;
-            color: #ccc;
+            color: #ddd;
             transition: color 0.15s, transform 0.1s;
         }
         .star-btn:hover, .star-btn:focus-visible { transform: scale(1.12); }
         .star-btn.filled { color: var(--red); }
-        .reaction-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
-        .reaction-chip {
-            background: var(--white);
-            border: 1.5px solid #ddd;
-            color: var(--dark);
-            border-radius: 20px;
-            padding: 6px 14px;
-            font-family: 'Barlow', sans-serif;
-            font-size: 0.82rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.15s, border-color 0.15s, color 0.15s;
-        }
-        .reaction-chip.active { background: var(--dark); border-color: var(--dark); color: var(--white); }
         .submit-rating-btn {
             background: var(--red);
             color: var(--white);
             border: none;
             border-radius: 10px;
-            padding: 12px 20px;
+            padding: 13px 22px;
             font-family: 'Barlow', sans-serif;
             font-weight: 700;
-            font-size: 0.88rem;
+            font-size: 0.9rem;
             cursor: pointer;
+            width: 100%;
         }
         .submit-rating-btn:disabled { background: #ccc; cursor: not-allowed; }
         .recipe-rating-display {
@@ -1332,7 +1359,7 @@
     <div class="logo" onclick="showHub()">BASIC CHEFS</div>
     <nav>
         <a onclick="showHub()">Recipes</a>
-        <a onclick="showCookbook()">My Cookbook</a>
+        <a onclick="showCookbook()">My Cookbook<span class="nav-dot" id="cookbook-nav-dot"></span></a>
         <a onclick="scrollToAbout()">About</a>
         <a onclick="scrollToEmail()">Newsletter</a>
     </nav>
@@ -1571,7 +1598,6 @@ let madeRecipes = JSON.parse(localStorage.getItem('basicchefs_made') || '[]');
 const RATINGS_ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbwDx7iLdc59ddmna2M8PZJw7YrH68XEbXJBnzVdjzkhBr7niJdAuENWORO3VzJE7iZ-rw/exec';
 let ratingsData = {};
 let currentStarRating = 0;
-let currentReactionTags = [];
 
 function loadRatings() {
     if (!RATINGS_ENDPOINT_URL) return;
@@ -1608,15 +1634,21 @@ function submitRatingToSheet(id, title, rating, reactions) {
 
 function openRatingPanel(id) {
     currentStarRating = 0;
-    currentReactionTags = [];
-    const panel = document.getElementById(`rating-panel-${id}`);
-    if (!panel) return;
-    panel.classList.remove('hidden');
-    panel.querySelectorAll('.star-btn').forEach(b => b.classList.remove('filled'));
-    panel.querySelectorAll('.reaction-chip').forEach(b => b.classList.remove('active'));
+    const overlay = document.getElementById(`rating-overlay-${id}`);
+    if (!overlay) return;
+    overlay.classList.add('open');
+    overlay.querySelectorAll('.star-btn').forEach(b => b.classList.remove('filled'));
     const submitBtn = document.getElementById(`submit-rating-${id}`);
     if (submitBtn) submitBtn.disabled = true;
-    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (window.gsap && !prefersReduced) {
+        gsap.fromTo(overlay.querySelector('.rating-modal'), { scale: 0.92, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.25, ease: 'power2.out' });
+    }
+}
+
+function closeRatingPanel(id) {
+    const overlay = document.getElementById(`rating-overlay-${id}`);
+    if (overlay) overlay.classList.remove('open');
 }
 
 function selectStar(id, n) {
@@ -1628,20 +1660,9 @@ function selectStar(id, n) {
     if (submitBtn) submitBtn.disabled = false;
 }
 
-function toggleReaction(tag, btn) {
-    const idx = currentReactionTags.indexOf(tag);
-    if (idx === -1) {
-        currentReactionTags.push(tag);
-        btn.classList.add('active');
-    } else {
-        currentReactionTags.splice(idx, 1);
-        btn.classList.remove('active');
-    }
-}
-
 function submitRating(id, title) {
     if (currentStarRating === 0) return;
-    submitRatingToSheet(id, title, currentStarRating, currentReactionTags);
+    submitRatingToSheet(id, title, currentStarRating, []);
 
     if (!madeRecipes.includes(id)) madeRecipes.push(id);
     localStorage.setItem('basicchefs_made', JSON.stringify(madeRecipes));
@@ -1834,7 +1855,35 @@ function showCookbook() {
     document.getElementById('detail-view').style.display = 'none';
     document.getElementById('cookbook-view').style.display = 'block';
     renderCookbook();
+    markCookbookSeen();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function markCookbookSeen() {
+    localStorage.setItem('basicchefs_cookbook_seen', '1');
+    const dot = document.getElementById('cookbook-nav-dot');
+    if (dot) dot.classList.remove('show');
+}
+
+function initNewCustomerTracking() {
+    // Runs once per browser, the very first time this code ever loads for them.
+    if (localStorage.getItem('basicchefs_visited')) return;
+    localStorage.setItem('basicchefs_visited', '1');
+    // Guard against misclassifying people who already used the site before
+    // this tracking existed - if they've already favourited, made, or shopped
+    // for something, they're clearly not new, even though this flag is.
+    const hasPriorActivity = favourites.length > 0 || madeRecipes.length > 0 || shoppingList.length > 0;
+    if (!hasPriorActivity) {
+        localStorage.setItem('basicchefs_new_customer', '1');
+    }
+}
+
+function initCookbookNudge() {
+    const dot = document.getElementById('cookbook-nav-dot');
+    const isNewCustomer = localStorage.getItem('basicchefs_new_customer') === '1';
+    if (dot && isNewCustomer && !localStorage.getItem('basicchefs_cookbook_seen')) {
+        dot.classList.add('show');
+    }
 }
 
 function renderCookbook() {
@@ -2004,15 +2053,15 @@ function showRecipe(id) {
             `}
         </div>
         ${madeRecipes.includes(r.id) ? '' : `
-        <div class="rating-panel hidden" id="rating-panel-${r.id}">
-            <div class="rating-prompt">How did it turn out?</div>
-            <div class="star-row" id="star-row-${r.id}">
-                ${[1,2,3,4,5].map(n => `<button type="button" class="star-btn" onclick="selectStar(${r.id}, ${n})" aria-label="${n} star${n > 1 ? 's' : ''}">\u2605</button>`).join('')}
+        <div class="rating-overlay" id="rating-overlay-${r.id}" onclick="closeRatingPanel(${r.id})">
+            <div class="rating-modal" onclick="event.stopPropagation()">
+                <button type="button" class="rating-modal-close" onclick="closeRatingPanel(${r.id})" aria-label="Close">\u2715</button>
+                <div class="rating-prompt">How did it turn out?</div>
+                <div class="star-row" id="star-row-${r.id}">
+                    ${[1,2,3,4,5].map(n => `<button type="button" class="star-btn" onclick="selectStar(${r.id}, ${n})" aria-label="${n} star${n > 1 ? 's' : ''}">\u2605</button>`).join('')}
+                </div>
+                <button type="button" class="submit-rating-btn" id="submit-rating-${r.id}" disabled onclick="submitRating(${r.id}, '${r.title.replace(/'/g, "\\'")}')">Submit &amp; unlock badge</button>
             </div>
-            <div class="reaction-chips">
-                ${['Loved it', 'Would make again', 'Too sweet', 'Needs more spice', 'Tricky'].map(tag => `<button type="button" class="reaction-chip" onclick="toggleReaction('${tag}', this)">${tag}</button>`).join('')}
-            </div>
-            <button type="button" class="submit-rating-btn" id="submit-rating-${r.id}" disabled onclick="submitRating(${r.id}, '${r.title.replace(/'/g, "\\'")}')">Submit &amp; unlock badge</button>
         </div>`}
     `;
     renderRatingDisplay(r);
@@ -2297,6 +2346,8 @@ renderHub();
 updateShopBadge();
 renderAbout();
 loadRatings();
+initNewCustomerTracking();
+initCookbookNudge();
 </script>
 
 
