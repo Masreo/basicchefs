@@ -1192,6 +1192,7 @@
             <div class="admin-tabs">
                 <button class="admin-tab active" id="tab-recipes" onclick="switchTab('recipes')">Recipes</button>
                 <button class="admin-tab" id="tab-about" onclick="switchTab('about')">About Section</button>
+                <button class="admin-tab" id="tab-vote" onclick="switchTab('vote')">Vote</button>
             </div>
         </div>
         <div class="admin-body">
@@ -1208,6 +1209,67 @@
                     <textarea id="about-text-input" style="min-height:140px;" placeholder="Tell people who you are and what Basic Chefs is all about..."></textarea>
                 </div>
                 <button class="btn btn-save-recipe" style="width:100%;" onclick="saveAbout()">Save Changes</button>
+            </div>
+
+            <!-- VOTE EDITOR -->
+            <div id="admin-vote-view" style="display:none;">
+                <div class="form-title">Manage Vote</div>
+                <p class="image-hint" style="margin-bottom:20px;">Set the 2 options people vote between on the site. Changing "Poll ID" starts a fresh round — old votes won't mix with new ones.</p>
+
+                <div class="form-group" style="margin-bottom:16px;">
+                    <label>Poll ID</label>
+                    <input type="text" id="poll-id-input" placeholder="e.g. 2026-09-round-2">
+                </div>
+
+                <div style="display:flex; gap:20px; flex-wrap:wrap;">
+                    <div style="flex:1; min-width:260px; border:1px solid #eee; border-radius:12px; padding:16px;">
+                        <div style="font-weight:800; margin-bottom:10px;">Option A</div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Title</label>
+                            <input type="text" id="poll-title-A" placeholder="e.g. Protein Tiramisu">
+                        </div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Teaser</label>
+                            <textarea id="poll-teaser-A" style="min-height:70px;" placeholder="One-line hook..."></textarea>
+                        </div>
+                        <div class="form-group full">
+                            <label>Photo</label>
+                            <button type="button" class="btn btn-edit" style="padding:10px 18px;font-size:0.9rem;" onclick="document.getElementById('poll-photo-upload-A').click()">📷 Upload photo</button>
+                            <input type="file" id="poll-photo-upload-A" accept="image/*" style="display:none;" onchange="handlePollImageUpload(this, 'A')">
+                            <input type="hidden" id="poll-image-A">
+                            <img class="image-preview" id="poll-image-preview-A" src="" alt="Preview" onerror="this.style.opacity=0" onload="this.style.opacity=1" style="opacity:0; margin-top:8px;">
+                        </div>
+                    </div>
+                    <div style="flex:1; min-width:260px; border:1px solid #eee; border-radius:12px; padding:16px;">
+                        <div style="font-weight:800; margin-bottom:10px;">Option B</div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Title</label>
+                            <input type="text" id="poll-title-B" placeholder="e.g. Protein Rice Pudding">
+                        </div>
+                        <div class="form-group" style="margin-bottom:12px;">
+                            <label>Teaser</label>
+                            <textarea id="poll-teaser-B" style="min-height:70px;" placeholder="One-line hook..."></textarea>
+                        </div>
+                        <div class="form-group full">
+                            <label>Photo</label>
+                            <button type="button" class="btn btn-edit" style="padding:10px 18px;font-size:0.9rem;" onclick="document.getElementById('poll-photo-upload-B').click()">📷 Upload photo</button>
+                            <input type="file" id="poll-photo-upload-B" accept="image/*" style="display:none;" onchange="handlePollImageUpload(this, 'B')">
+                            <input type="hidden" id="poll-image-B">
+                            <img class="image-preview" id="poll-image-preview-B" src="" alt="Preview" onerror="this.style.opacity=0" onload="this.style.opacity=1" style="opacity:0; margin-top:8px;">
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:24px; padding:16px; background:#FAFAFA; border-radius:12px;">
+                    <div style="font-weight:800; margin-bottom:8px;">Current results</div>
+                    <div id="poll-results-display" style="font-size:0.9rem; color:#666; margin-bottom:10px;">Not checked yet.</div>
+                    <button type="button" class="btn btn-edit" onclick="checkVoteResults()">🔄 Check current votes</button>
+                </div>
+
+                <div style="display:flex; gap:12px; margin-top:24px;">
+                    <button class="btn btn-save-recipe" style="flex:1;" onclick="savePoll()">Save Changes</button>
+                    <button class="btn" style="flex:1; background:#F5F5F5; color:#111;" onclick="startNewRound()">Start New Round</button>
+                </div>
             </div>
 
             <div id="admin-list-view" style="display: block;">
@@ -1340,6 +1402,8 @@ Make ahead and store in the fridge for up to 3 days."></textarea>
 
 let recipes = JSON.parse(localStorage.getItem('basicchefs_v2_recipes') || 'null') || defaultRecipes;
 let aboutContent = JSON.parse(localStorage.getItem('basicchefs_v2_about') || 'null') || defaultAbout;
+let pollData = JSON.parse(localStorage.getItem('basicchefs_v2_poll') || 'null') || defaultPoll;
+const RATINGS_ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbwDx7iLdc59ddmna2M8PZJw7YrH68XEbXJBnzVdjzkhBr7niJdAuENWORO3VzJE7iZ-rw/exec';
 
 function nextId() { return recipes.length > 0 ? Math.max(...recipes.map(r => r.id)) + 1 : 1; }
 function saveData() { localStorage.setItem('basicchefs_v2_recipes', JSON.stringify(recipes)); }
@@ -1352,7 +1416,7 @@ function showToast(msg) {
 }
 
 function downloadSiteData() {
-    const src = "// Basic Chefs - site content\n// Upload this file to your host, replacing the old site-data.js.\n\nconst defaultRecipes = " + JSON.stringify(recipes) + ";\n\nconst defaultAbout = " + JSON.stringify(aboutContent) + ";\n";
+    const src = "// Basic Chefs - site content\n// Upload this file to your host, replacing the old site-data.js.\n\nconst defaultRecipes = " + JSON.stringify(recipes) + ";\n\nconst defaultAbout = " + JSON.stringify(aboutContent) + ";\n\nconst defaultPoll = " + JSON.stringify(pollData) + ";\n";
     const blob = new Blob([src], {type: 'text/javascript; charset=utf-8'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -1369,16 +1433,117 @@ function exportRecipes() {
 }
 
 function switchTab(tab) {
-    const isRecipes = tab === 'recipes';
-    document.getElementById('tab-recipes').classList.toggle('active', isRecipes);
-    document.getElementById('tab-about').classList.toggle('active', !isRecipes);
-    document.getElementById('admin-list-view').style.display = isRecipes ? 'block' : 'none';
+    document.getElementById('tab-recipes').classList.toggle('active', tab === 'recipes');
+    document.getElementById('tab-about').classList.toggle('active', tab === 'about');
+    document.getElementById('tab-vote').classList.toggle('active', tab === 'vote');
+    document.getElementById('admin-list-view').style.display = tab === 'recipes' ? 'block' : 'none';
     document.getElementById('recipe-form').style.display = 'none';
-    document.getElementById('admin-about-view').style.display = isRecipes ? 'none' : 'block';
-    if (!isRecipes) {
+    document.getElementById('admin-about-view').style.display = tab === 'about' ? 'block' : 'none';
+    document.getElementById('admin-vote-view').style.display = tab === 'vote' ? 'block' : 'none';
+    if (tab === 'about') {
         document.getElementById('about-heading-input').value = aboutContent.heading;
         document.getElementById('about-text-input').value = aboutContent.text;
     }
+    if (tab === 'vote') {
+        loadPollForm();
+    }
+}
+
+function loadPollForm() {
+    const optA = pollData.options.find(o => o.key === 'A') || {};
+    const optB = pollData.options.find(o => o.key === 'B') || {};
+    document.getElementById('poll-id-input').value = pollData.id || '';
+    document.getElementById('poll-title-A').value = optA.title || '';
+    document.getElementById('poll-teaser-A').value = optA.teaser || '';
+    document.getElementById('poll-image-A').value = optA.image || '';
+    document.getElementById('poll-title-B').value = optB.title || '';
+    document.getElementById('poll-teaser-B').value = optB.teaser || '';
+    document.getElementById('poll-image-B').value = optB.image || '';
+    const previewA = document.getElementById('poll-image-preview-A');
+    const previewB = document.getElementById('poll-image-preview-B');
+    previewA.src = optA.image || '';
+    previewA.style.opacity = optA.image ? 1 : 0;
+    previewB.src = optB.image || '';
+    previewB.style.opacity = optB.image ? 1 : 0;
+    document.getElementById('poll-results-display').textContent = 'Not checked yet.';
+}
+
+function handlePollImageUpload(input, key) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const img = new Image();
+        img.onload = function() {
+            const maxW = 900;
+            const scale = img.width > maxW ? maxW / img.width : 1;
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width * scale;
+            canvas.height = img.height * scale;
+            canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            document.getElementById('poll-image-' + key).value = dataUrl;
+            const preview = document.getElementById('poll-image-preview-' + key);
+            preview.src = dataUrl;
+            preview.style.opacity = 1;
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+}
+
+function savePoll() {
+    const id = document.getElementById('poll-id-input').value.trim();
+    if (!id) { showToast('Poll ID cannot be empty!'); return; }
+    const titleA = document.getElementById('poll-title-A').value.trim();
+    const titleB = document.getElementById('poll-title-B').value.trim();
+    if (!titleA || !titleB) { showToast('Both options need a title!'); return; }
+    pollData = {
+        id: id,
+        options: [
+            { key: 'A', title: titleA, teaser: document.getElementById('poll-teaser-A').value.trim(), image: document.getElementById('poll-image-A').value },
+            { key: 'B', title: titleB, teaser: document.getElementById('poll-teaser-B').value.trim(), image: document.getElementById('poll-image-B').value }
+        ]
+    };
+    localStorage.setItem('basicchefs_v2_poll', JSON.stringify(pollData));
+    downloadSiteData();
+    showToast('Vote saved - site-data.js downloaded, upload it to go live!');
+}
+
+function startNewRound() {
+    if (!confirm('This resets the vote count to 0 for a fresh pair. Old votes stay in your Sheet but won\'t count toward the new poll. Continue?')) return;
+    document.getElementById('poll-id-input').value = 'poll-' + Date.now();
+    document.getElementById('poll-title-A').value = '';
+    document.getElementById('poll-teaser-A').value = '';
+    document.getElementById('poll-image-A').value = '';
+    document.getElementById('poll-title-B').value = '';
+    document.getElementById('poll-teaser-B').value = '';
+    document.getElementById('poll-image-B').value = '';
+    document.getElementById('poll-image-preview-A').style.opacity = 0;
+    document.getElementById('poll-image-preview-B').style.opacity = 0;
+    document.getElementById('poll-results-display').textContent = 'Not checked yet.';
+    showToast('New round started - fill in the 2 options, then Save Changes.');
+}
+
+function checkVoteResults() {
+    const id = document.getElementById('poll-id-input').value.trim() || pollData.id;
+    const display = document.getElementById('poll-results-display');
+    display.textContent = 'Checking...';
+    const cbName = 'adminVoteCb_' + Date.now();
+    window[cbName] = function(data) {
+        const a = (data && data.A) || 0;
+        const b = (data && data.B) || 0;
+        const total = a + b;
+        const pctA = total ? Math.round((a / total) * 100) : 0;
+        const pctB = total ? Math.round((b / total) * 100) : 0;
+        display.textContent = 'Option A: ' + a + ' votes (' + pctA + '%)  ·  Option B: ' + b + ' votes (' + pctB + '%)  ·  Total: ' + total;
+        delete window[cbName];
+        script.remove();
+    };
+    const script = document.createElement('script');
+    script.onerror = function() { display.textContent = 'Could not reach the votes backend.'; };
+    script.src = RATINGS_ENDPOINT_URL + '?type=votes&pollId=' + encodeURIComponent(id) + '&callback=' + cbName;
+    document.body.appendChild(script);
 }
 
 function saveAbout() {
