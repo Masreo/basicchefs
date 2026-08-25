@@ -1268,7 +1268,8 @@
 
                 <div style="display:flex; gap:12px; margin-top:24px;">
                     <button class="btn btn-save-recipe" style="flex:1;" onclick="savePoll()">Save Changes</button>
-                    <button class="btn" style="flex:1; background:#F5F5F5; color:#111;" onclick="startNewRound()">Start New Round</button>
+                    <button class="btn" style="flex:1; background:#F5F5F5; color:#111; font-size:0.82rem;" onclick="closeRoundAndReset('A')">🏆 A Won → New Round</button>
+                    <button class="btn" style="flex:1; background:#F5F5F5; color:#111; font-size:0.82rem;" onclick="closeRoundAndReset('B')">🏆 B Won → New Round</button>
                 </div>
             </div>
 
@@ -1403,6 +1404,7 @@ Make ahead and store in the fridge for up to 3 days."></textarea>
 let recipes = JSON.parse(localStorage.getItem('basicchefs_v2_recipes') || 'null') || defaultRecipes;
 let aboutContent = JSON.parse(localStorage.getItem('basicchefs_v2_about') || 'null') || defaultAbout;
 let pollData = JSON.parse(localStorage.getItem('basicchefs_v2_poll') || 'null') || defaultPoll;
+let lastPollData = JSON.parse(localStorage.getItem('basicchefs_v2_lastpoll') || 'null') || (typeof defaultLastPoll !== 'undefined' ? defaultLastPoll : null);
 const RATINGS_ENDPOINT_URL = 'https://script.google.com/macros/s/AKfycbwDx7iLdc59ddmna2M8PZJw7YrH68XEbXJBnzVdjzkhBr7niJdAuENWORO3VzJE7iZ-rw/exec';
 
 function nextId() { return recipes.length > 0 ? Math.max(...recipes.map(r => r.id)) + 1 : 1; }
@@ -1416,7 +1418,7 @@ function showToast(msg) {
 }
 
 function downloadSiteData() {
-    const src = "// Basic Chefs - site content\n// Upload this file to your host, replacing the old site-data.js.\n\nconst defaultRecipes = " + JSON.stringify(recipes) + ";\n\nconst defaultAbout = " + JSON.stringify(aboutContent) + ";\n\nconst defaultPoll = " + JSON.stringify(pollData) + ";\n";
+    const src = "// Basic Chefs - site content\n// Upload this file to your host, replacing the old site-data.js.\n\nconst defaultRecipes = " + JSON.stringify(recipes) + ";\n\nconst defaultAbout = " + JSON.stringify(aboutContent) + ";\n\nconst defaultPoll = " + JSON.stringify(pollData) + ";\n\nconst defaultLastPoll = " + JSON.stringify(lastPollData) + ";\n";
     const blob = new Blob([src], {type: 'text/javascript; charset=utf-8'});
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
@@ -1506,12 +1508,24 @@ function savePoll() {
         ]
     };
     localStorage.setItem('basicchefs_v2_poll', JSON.stringify(pollData));
+    localStorage.setItem('basicchefs_v2_lastpoll', JSON.stringify(lastPollData));
     downloadSiteData();
     showToast('Vote saved - site-data.js downloaded, upload it to go live!');
 }
 
-function startNewRound() {
-    if (!confirm('This resets the vote count to 0 for a fresh pair. Old votes stay in your Sheet but won\'t count toward the new poll. Continue?')) return;
+function closeRoundAndReset(winnerKey) {
+    const winnerTitle = document.getElementById('poll-title-' + winnerKey).value.trim() || ('Option ' + winnerKey);
+    if (!confirm('Close this round with "' + winnerTitle + '" as the winner?\n\nReturning visitors will see a quick winner animation, then the new vote. Old votes stay in your Sheet. Continue?')) return;
+
+    lastPollData = {
+        id: document.getElementById('poll-id-input').value.trim() || pollData.id,
+        options: [
+            { key: 'A', title: document.getElementById('poll-title-A').value.trim(), teaser: document.getElementById('poll-teaser-A').value.trim(), image: document.getElementById('poll-image-A').value },
+            { key: 'B', title: document.getElementById('poll-title-B').value.trim(), teaser: document.getElementById('poll-teaser-B').value.trim(), image: document.getElementById('poll-image-B').value }
+        ],
+        winnerKey: winnerKey
+    };
+
     document.getElementById('poll-id-input').value = 'poll-' + Date.now();
     document.getElementById('poll-title-A').value = '';
     document.getElementById('poll-teaser-A').value = '';
@@ -1522,7 +1536,7 @@ function startNewRound() {
     document.getElementById('poll-image-preview-A').style.opacity = 0;
     document.getElementById('poll-image-preview-B').style.opacity = 0;
     document.getElementById('poll-results-display').textContent = 'Not checked yet.';
-    showToast('New round started - fill in the 2 options, then Save Changes.');
+    showToast('Round closed, winner recorded. Fill in the next 2 options, then Save Changes.');
 }
 
 function checkVoteResults() {
