@@ -1846,9 +1846,36 @@ function renderVoteResults(pick) {
     const note = document.getElementById('vote-note');
     if (note) note.textContent = 'One vote per visitor. Results update live.';
 
+    fetchVoteTallyWithRetry(0);
+}
+
+const VOTE_TALLY_MAX_RETRIES = 2;
+const VOTE_TALLY_RETRY_DELAY_MS = 900;
+
+function fetchVoteTallyWithRetry(attempt) {
     if (!RATINGS_ENDPOINT_URL) return;
-    const cbName = 'voteCallback_' + Date.now();
+    const cbName = 'voteCallback_' + Date.now() + '_' + attempt;
+    let settled = false;
+
+    const handleFailure = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeoutId);
+        delete window[cbName];
+        script.remove();
+        if (attempt < VOTE_TALLY_MAX_RETRIES) {
+            setTimeout(() => fetchVoteTallyWithRetry(attempt + 1), VOTE_TALLY_RETRY_DELAY_MS);
+        } else {
+            showVoteResultsError();
+        }
+    };
+
+    const timeoutId = setTimeout(handleFailure, 6000);
+
     window[cbName] = function(data) {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timeoutId);
         const a = (data && data.A) || 0;
         const b = (data && data.B) || 0;
         const total = a + b;
@@ -1871,9 +1898,16 @@ function renderVoteResults(pick) {
         delete window[cbName];
         script.remove();
     };
+
     const script = document.createElement('script');
+    script.onerror = handleFailure;
     script.src = RATINGS_ENDPOINT_URL + '?type=votes&pollId=' + encodeURIComponent(VOTE_POLL_ID) + '&callback=' + cbName;
     document.body.appendChild(script);
+}
+
+function showVoteResultsError() {
+    const note = document.getElementById('vote-note');
+    if (note) note.innerHTML = 'Results are taking a moment to load — <a href="#" onclick="location.reload();return false;" style="color:var(--red);font-weight:700;">refresh to try again</a>.';
 }
 
 function loadRatings() {
