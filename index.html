@@ -2660,6 +2660,12 @@ loadRatings();
 initNewCustomerTracking();
 initCookbookNudge();
 initVote();
+
+// Deep link from static recipe pages (?recipe=ID) straight into the interactive view
+(function () {
+    const deepLinkId = parseInt(new URLSearchParams(location.search).get('recipe'), 10);
+    if (!isNaN(deepLinkId)) showRecipe(deepLinkId);
+})();
 </script>
 
 
