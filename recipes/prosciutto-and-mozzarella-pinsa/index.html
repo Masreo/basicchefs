@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#111111">
 <title>Prosciutto &amp; Mozzarella Pinsa Recipe | Basic Chefs</title>
 <meta name="description" content="The ultimate fridge-raid dinner. A yellow-sticker pinsa topped with whatever's left in the fridge, the cooked veg becomes your sauce, so there's no…">
 <link rel="canonical" href="https://basicchefs.com/recipes/prosciutto-and-mozzarella-pinsa/">
@@ -28,8 +29,10 @@ body { margin:0; font-family:'Barlow',sans-serif; color:var(--dark); background:
 .topbar { background:var(--dark); padding:16px 24px; }
 .topbar a { color:var(--white); text-decoration:none; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:1.4rem; text-transform:uppercase; letter-spacing:.5px; }
 .topbar a span { color:var(--blue); }
-.hero-img { width:100%; max-height:460px; object-fit:cover; border-radius:0 0 16px 16px; }
-h1 { font-family:'Barlow Condensed',sans-serif; font-weight:900; text-transform:uppercase; font-size: clamp(2rem, 5vw, 3rem); margin: 28px 0 8px; }
+.skip-link { position:absolute; left:-9999px; top:0; background:var(--blue); color:var(--dark); padding:10px 16px; z-index:10; font-weight:700; }
+.skip-link:focus { left:8px; top:8px; }
+.hero-img { width:100%; height:auto; max-height:460px; object-fit:cover; border-radius:0 0 16px 16px; display:block; }
+h1 { font-family:'Barlow Condensed',sans-serif; font-weight:900; text-transform:uppercase; font-size: clamp(2rem, 5vw, 3rem); margin: 28px 0 8px; text-wrap:balance; }
 .desc { font-size:1.1rem; color:#333; margin-bottom:20px; }
 .meta-bar { display:flex; gap:24px; flex-wrap:wrap; border-top:2px solid var(--dark); border-bottom:2px solid var(--dark); padding:14px 0; margin-bottom:28px; }
 .meta-cell .label { font-size:.75rem; text-transform:uppercase; letter-spacing:.5px; color:#777; font-weight:600; }
@@ -42,6 +45,11 @@ h2.section { font-family:'Barlow Condensed',sans-serif; font-weight:900; text-tr
 .steps li::before { content:counter(step); position:absolute; left:0; top:12px; width:28px; height:28px; background:var(--red); color:var(--white); border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:.95rem; }
 .tips { background:#fafafa; border-left:6px solid var(--blue); padding:16px 20px; margin-top:24px; border-radius:0 8px 8px 0; }
 .tips h2.section { border-left:none; padding-left:0; margin-top:0; }
+.related { margin-top:40px; }
+.related-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:16px; }
+.related-card { display:block; text-decoration:none; color:var(--dark); }
+.related-card img { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:10px; margin-bottom:8px; }
+.related-card span { font-family:'Barlow Condensed',sans-serif; font-weight:700; font-size:1.05rem; line-height:1.2; display:block; }
 .cta { display:block; text-align:center; background:var(--red); color:var(--white); text-decoration:none; font-family:'Barlow Condensed',sans-serif; font-weight:900; text-transform:uppercase; letter-spacing:.5px; font-size:1.2rem; padding:18px; border-radius:10px; margin:40px 0 0; }
 .cta span { color:var(--blue); }
 .sub { text-align:center; color:#777; font-size:.85rem; margin-top:10px; }
@@ -50,9 +58,10 @@ footer a { color:#777; }
 </style>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <div class="topbar"><a href="https://basicchefs.com/">BASIC<span>CHEFS</span></a></div>
-<img class="hero-img" src="cover.jpg" alt="Prosciutto &amp; Mozzarella Pinsa">
-<div class="wrap">
+<img class="hero-img" src="cover.jpg" alt="Prosciutto &amp; Mozzarella Pinsa" width="900" height="675" fetchpriority="high">
+<div class="wrap" id="main">
 <h1>Prosciutto &amp; Mozzarella Pinsa</h1>
 <p class="desc">The ultimate fridge-raid dinner. A yellow-sticker pinsa topped with whatever's left in the fridge, the cooked veg becomes your sauce, so there's no passata, no extra pots, no faff.</p>
 <div class="meta-bar">
@@ -83,6 +92,7 @@ footer a { color:#777; }
 <li>Scatter over loads of fresh chopped chives, slice and serve.</li>
 </ol>
 <div class="tips"><h2 class="section">Tips</h2><ul class="ingredients"><li>Ready-made pinsa is your shortcut to pizza night in under 20 minutes - no dough, no waiting, just top and bake.</li><li>At the normal pinsa price this meal would cost around £6 - the yellow-sticker version brings it down to about £4.40.</li></ul></div>
+<div class="related"><h2 class="section">You Might Also Like</h2><div class="related-grid"><a class="related-card" href="https://basicchefs.com/recipes/15-minute-beef-and-tomato-penne/"><img src="https://basicchefs.com/recipes/15-minute-beef-and-tomato-penne/cover.jpg" alt="15-Minute Beef &amp; Tomato Penne" loading="lazy"><span>15-Minute Beef &amp; Tomato Penne</span></a><a class="related-card" href="https://basicchefs.com/recipes/pistachio-chocolate-chickpea-cookies/"><img src="https://basicchefs.com/recipes/pistachio-chocolate-chickpea-cookies/cover.jpg" alt="Pistachio Chocolate Chickpea Cookies" loading="lazy"><span>Pistachio Chocolate Chickpea Cookies</span></a><a class="related-card" href="https://basicchefs.com/recipes/lemon-meringue-chickpea-cookies/"><img src="https://basicchefs.com/recipes/lemon-meringue-chickpea-cookies/cover.jpg" alt="Lemon Meringue Chickpea Cookies" loading="lazy"><span>Lemon Meringue Chickpea Cookies</span></a></div></div>
 <a class="cta" href="https://basicchefs.com/?recipe=7">Cook this on Basic Chefs <span>→</span></a>
 <p class="sub">Rate it, scale servings, add to your shopping list, and unlock the cook mode timer on the full site.</p>
 </div>
