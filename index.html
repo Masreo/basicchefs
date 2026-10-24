@@ -1,14 +1,7 @@
 <!DOCTYPE html><html lang="en"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-H4QKR6ZRCE"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-H4QKR6ZRCE');
-    </script>
+    <script src="/consent.js"></script>
     <title>Basic Chefs</title>
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
@@ -1631,8 +1624,8 @@ Basic Chefs is for everyone. No complicated steps, no fancy talk just real food,
 
 <!-- FOOTER -->
 <footer>
-    © 2025 <span>Basic Chefs</span> — Keep it simple. Make it delicious.
-    <div class="footer-social"><a href="https://youtube.com/@basicchefs" target="_blank" rel="noopener">YouTube</a></div>
+    © 2026 <span>Basic Chefs</span> — Keep it simple. Make it delicious.
+    <div class="footer-social"><a href="https://youtube.com/@basicchefs" target="_blank" rel="noopener">YouTube</a> &middot; <a href="/privacy/">Privacy</a> &middot; <a href="#" onclick="bcCookieSettings();return false;">Cookie settings</a></div>
 </footer>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
@@ -2275,11 +2268,11 @@ function getVideoEmbed(url) {
     if (!url) return '';
     const ytShort = url.match(/youtube\.com\/shorts\/([\w-]{6,})/);
     if (ytShort) {
-        return `<div class="video-embed portrait"><iframe src="https://www.youtube.com/embed/${ytShort[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+        return `<div class="video-embed portrait"><iframe src="https://www.youtube-nocookie.com/embed/${ytShort[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
     }
     const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]{6,})/);
     if (yt) {
-        return `<div class="video-embed"><iframe src="https://www.youtube.com/embed/${yt[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+        return `<div class="video-embed"><iframe src="https://www.youtube-nocookie.com/embed/${yt[1]}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
     }
     const vimeo = url.match(/vimeo\.com\/(\d+)/);
     if (vimeo) {
