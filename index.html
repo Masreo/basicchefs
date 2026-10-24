@@ -2,7 +2,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="/consent.js"></script>
-    <title>Basic Chefs</title>
+    <title>Basic Chefs | Simple Recipes, Serious Flavour</title>
+    <meta name="description" content="Simple, high-protein, budget-friendly recipes with serious flavour. Easy weeknight meals and bakes, each one tested and made at home.">
+    <link rel="canonical" href="https://basicchefs.com/">
+    <meta name="theme-color" content="#FF2D1A">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Basic Chefs">
+    <meta property="og:title" content="Basic Chefs | Simple Recipes, Serious Flavour">
+    <meta property="og:description" content="Simple, high-protein, budget-friendly recipes with serious flavour. New recipe every week.">
+    <meta property="og:url" content="https://basicchefs.com/">
+    <meta property="og:image" content="https://basicchefs.com/recipes/granola-clusters/cover.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Basic Chefs | Simple Recipes, Serious Flavour">
+    <meta name="twitter:description" content="Simple, high-protein, budget-friendly recipes with serious flavour. New recipe every week.">
+    <meta name="twitter:image" content="https://basicchefs.com/recipes/granola-clusters/cover.jpg">
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="apple-touch-icon" href="/favicon-192.png">
@@ -1479,6 +1492,12 @@
             .detail-actions > * { flex: 1; }
             .detail-actions .share-btn, .detail-actions .print-btn, .detail-actions .cook-btn { width: 100%; padding: 12px 6px; }
         }
+
+        /* ── SMALL FIXES: tap targets + empty state ── */
+        .footer-social a { display: inline-block; padding: 12px 8px; }
+        .shop-close { min-height: 44px; min-width: 44px; }
+        .no-results { text-align: center; padding: 48px 16px; color: #666; font-size: 1.05rem; line-height: 1.6; }
+        .no-results button { display: inline-block; margin-top: 14px; background: var(--dark); color: #fff; border: 0; border-radius: 10px; padding: 12px 22px; font: 700 0.95rem 'Barlow', sans-serif; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -1525,7 +1544,7 @@
         <div class="search-wrap">
             <div class="search-wrap-inner">
                 <span class="search-icon">🔍</span>
-                <input class="search-input" type="text" id="search-input" placeholder="Search recipes..." oninput="searchRecipes(this.value)">
+                <input class="search-input" type="text" id="search-input" placeholder="Search recipes..." aria-label="Search recipes" oninput="searchRecipes(this.value)">
             </div>
         </div>
     </div>
@@ -1573,6 +1592,7 @@
         </div>
         <div class="recipe-grid" id="recipe-grid">
         </div>
+        <div class="no-results" id="no-results" role="status" aria-live="polite" style="display:none;"></div>
     </section>
 
     <!-- ABOUT STRIP -->
@@ -1593,7 +1613,7 @@ Basic Chefs is for everyone. No complicated steps, no fancy talk just real food,
         <h2>NEW RECIPE<br>EVERY WEEK</h2>
         <p>Drop your email and we'll send it straight to you. No spam, just food.</p>
         <form class="email-form" action="https://formspree.io/f/mgoqlodd" method="POST" onsubmit="handleEmailSubmit(event)">
-            <input class="email-input" type="email" name="email" placeholder="your@email.com" id="email-input" required="">
+            <input class="email-input" type="email" name="email" placeholder="your@email.com" id="email-input" aria-label="Your email address" autocomplete="email" required="">
             <button class="email-submit" type="submit">Sign me up</button>
         </form>
         <p class="email-note">Join the list. Unsubscribe any time.</p>
@@ -2016,6 +2036,25 @@ function applyFilters() {
         if (show) visible++;
     });
     document.getElementById('recipe-count').textContent = `${visible} recipe${visible !== 1 ? 's' : ''}`;
+    const nr = document.getElementById('no-results');
+    if (nr) {
+        if (visible === 0 && cards.length > 0) {
+            nr.innerHTML = (currentFilter === 'fav' && !currentSearch)
+                ? 'No saved recipes yet. Tap the \u2665 on a recipe to save it.'
+                : 'No recipes match that. Try another filter or search.<br><button type="button" onclick="clearFilters()">Show all recipes</button>';
+            nr.style.display = 'block';
+        } else {
+            nr.style.display = 'none';
+        }
+    }
+}
+
+function clearFilters() {
+    const searchEl = document.getElementById('search-input');
+    if (searchEl) searchEl.value = '';
+    const allBtn = document.querySelector('.filter-btn');
+    filterRecipes('all', allBtn);
+    if (typeof searchRecipes === 'function') searchRecipes('');
 }
 
 // ─────────────────────────────────────────────
@@ -2057,6 +2096,11 @@ function renderHub() {
     if (searchEl) searchEl.value = '';
     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
     document.querySelector('.filter-btn').classList.add('active');
+    // Hide difficulty chips that have no recipes (e.g. Hard) so visitors never hit an empty result.
+    ['Easy', 'Medium', 'Hard'].forEach(d => {
+        const btn = [...document.querySelectorAll('.filter-btn')].find(b => (b.getAttribute('onclick') || '').includes("'" + d + "'"));
+        if (btn) btn.style.display = recipes.some(r => r.difficulty === d) ? '' : 'none';
+    });
 }
 
 // ─────────────────────────────────────────────
