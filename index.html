@@ -1440,6 +1440,52 @@
         }
         .vote-card.your-pick .vote-your-pick-tag { display: block; }
         .vote-note { font-size: 0.8rem; color: #999; margin-top: 14px; }
+
+        /* ── MOBILE FIXES (nav + filter bar) ── */
+        .menu-toggle { display: none; }
+        @media (max-width: 760px) {
+            header { flex-wrap: wrap; padding: 12px 20px; }
+            .logo { white-space: nowrap; font-size: 1.5rem; }
+            .menu-toggle {
+                display: flex; flex-direction: column; justify-content: center; gap: 5px;
+                width: 44px; height: 44px; padding: 10px; margin-right: -10px;
+                background: none; border: none; cursor: pointer;
+            }
+            .menu-toggle span {
+                display: block; height: 3px; width: 100%; background: var(--white);
+                border-radius: 2px; transition: transform 0.2s ease, opacity 0.2s ease;
+            }
+            header.menu-open .menu-toggle span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+            header.menu-open .menu-toggle span:nth-child(2) { opacity: 0; }
+            header.menu-open .menu-toggle span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+            nav {
+                display: none; width: 100%; flex-direction: column; align-items: stretch;
+                gap: 0; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.25);
+            }
+            header.menu-open nav { display: flex; }
+            nav a { padding: 14px 4px; font-size: 1.05rem; border-bottom: 1px solid rgba(255,255,255,0.15); }
+            nav a:last-child { border-bottom: none; }
+            .nav-dot { position: static; display: none; margin-left: 8px; vertical-align: middle; }
+            .nav-dot.show { display: inline-block; }
+
+            .filter-bar { flex-wrap: wrap; overflow-x: visible; padding: 8px 16px 0; gap: 0; }
+            .search-wrap { order: -1; width: 100%; margin-left: 0; padding: 4px 0 8px; }
+            .search-wrap-inner { width: 100%; }
+            .search-input, .search-input:focus { width: 100%; font-size: 1rem; }
+            .filter-btn { padding: 12px 12px; }
+        }
+
+        /* ── DETAIL ACTION BAR ── */
+        .detail-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px; }
+        .detail-actions { display: flex; gap: 10px; }
+        .share-wrap { position: relative; }
+        .share-btn, .print-btn, .cook-btn { white-space: nowrap; }
+        @media (max-width: 760px) {
+            .detail-topbar { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 24px; }
+            .detail-actions { width: 100%; }
+            .detail-actions > * { flex: 1; }
+            .detail-actions .share-btn, .detail-actions .print-btn, .detail-actions .cook-btn { width: 100%; padding: 12px 6px; }
+        }
     </style>
 </head>
 <body>
@@ -1447,7 +1493,8 @@
 <!-- HEADER -->
 <header>
     <div class="logo" onclick="showHub()">BASIC CHEFS</div>
-    <nav>
+    <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Menu" aria-expanded="false" aria-controls="main-nav" onclick="toggleMenu()"><span></span><span></span><span></span></button>
+    <nav id="main-nav">
         <a onclick="showHub()">Recipes</a>
         <a onclick="showCookbook()">My Cookbook<span class="nav-dot" id="cookbook-nav-dot"></span></a>
         <a onclick="scrollToAbout()">About</a>
@@ -2164,6 +2211,19 @@ function changeScale(delta) {
     }
 }
 
+function toggleMenu() {
+    const h = document.querySelector('header');
+    const open = h.classList.toggle('menu-open');
+    document.getElementById('menu-toggle').setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+document.addEventListener('click', function (e) {
+    const h = document.querySelector('header');
+    if (h && h.classList.contains('menu-open') && e.target.closest('#main-nav a')) {
+        h.classList.remove('menu-open');
+        document.getElementById('menu-toggle').setAttribute('aria-expanded', 'false');
+    }
+});
+
 function showHub() {
     document.getElementById('hub-view').style.display = 'block';
     document.getElementById('detail-view').style.display = 'none';
@@ -2312,16 +2372,16 @@ function showRecipe(id) {
     document.getElementById('detail-view').style.display = 'block';
     document.getElementById('cookbook-view').style.display = 'none';
     document.getElementById('detail-inner').innerHTML = `
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:36px;">
+        <div class="detail-topbar">
             <button class="back-btn" style="margin-bottom:0;" onclick="showHub()">← All Recipes</button>
-            <div style="display:flex;gap:10px;">
-                <button class="share-btn" onclick="toggleShare(event, '${r.title}', '${r.description.replace(/'/g,"\\'")}')">
-                    ↗ Share
+            <div class="detail-actions">
+                <div class="share-wrap">
+                    <button class="share-btn" onclick="toggleShare(event, '${r.title}', '${r.description.replace(/'/g,"\\'")}')">↗ Share</button>
                     <div class="share-dropdown" id="share-dropdown">
                         <a class="share-option" id="whatsapp-link" target="_blank">💬 WhatsApp</a>
                         <button class="share-option" onclick="copyLink()">🔗 Copy link</button>
                     </div>
-                </button>
+                </div>
                 <button class="print-btn" onclick="window.print()">🖨 Print</button>
                 <button class="cook-btn" onclick="enterCookMode()">👨‍🍳 Cook Mode</button>
             </div>
